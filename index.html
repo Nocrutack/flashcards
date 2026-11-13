@@ -113,7 +113,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.3
+        Sistema Híbrido de Vocabulario v3.4
       </div>
     </div>
   </div>
@@ -125,7 +125,7 @@
         <h3 class="text-lg font-bold text-white flex items-center gap-2">⌨️ Configurar Atajos</h3>
         <button onclick="exitActiveState()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
       </div>
-      <p class="text-xs text-slate-400 mb-4">Haz clic en una tecla para cambiarla por la que prefieras:</p>
+      <p class="text-xs text-slate-400 mb-4">Haz clic en una tecla para cambiarla por la que prefieras (Ej. F1 para volver):</p>
       
       <div id="keybinds-list" class="space-y-2 text-sm text-slate-300 mb-5"></div>
 
@@ -353,11 +353,10 @@
     let editingIndex = null;
     let currentThemeHex = localStorage.getItem('themeHex') || '#4f46e5';
     
-    let activeFilterType = 'all';
+    let activeFilterType = 'all'; // 'all', 'level', 'category', 'search'
     let activeFilterValue = null;
     let searchQuery = '';
 
-    // Mapa de atajos por defecto con "goBack" configurado en Escape (puedes cambiarlo a F1 en el panel de ayuda)
     let defaultKeybinds = {
       newCard: 'n',
       editCard: 'e',
@@ -369,7 +368,7 @@
       toggleSearch: 'b',
       toggleTheme: 'c',
       toggleHelp: 'h',
-      goBack: 'Escape'
+      goBack: 'Escape' // Puedes cambiarlo a F1 en el panel de ayuda
     };
 
     let keybinds = JSON.parse(localStorage.getItem('appKeybinds')) || { ...defaultKeybinds };
@@ -393,14 +392,26 @@
     }
 
     function getActiveCards() {
-      let filtered = cards;
+      let filtered = [...cards];
+
       if (activeFilterType === 'level') {
-        filtered = cards.filter(c => c.level === activeFilterValue);
+        filtered = filtered.filter(c => c.level === activeFilterValue);
+        filtered.sort((a, b) => a.front.localeCompare(b.front));
       } else if (activeFilterType === 'category') {
-        filtered = cards.filter(c => c.category === activeFilterValue);
+        filtered = filtered.filter(c => c.category === activeFilterValue);
+        filtered.sort((a, b) => a.front.localeCompare(b.front));
       } else if (activeFilterType === 'search') {
         const q = searchQuery.toLowerCase();
-        filtered = cards.filter(c => c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q));
+        
+        // Separar las que empiezan exactamente con la letra/palabra de las que solo la contienen
+        const startsWithMatches = filtered.filter(c => c.front.toLowerCase().startsWith(q) || c.back.toLowerCase().startsWith(q));
+        const includesMatches = filtered.filter(c => !c.front.toLowerCase().startsWith(q) && !c.back.toLowerCase().startsWith(q) && (c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q)));
+
+        // Ordenar alfabéticamente (A-Z) ambos grupos
+        startsWithMatches.sort((a, b) => a.front.localeCompare(b.front));
+        includesMatches.sort((a, b) => a.front.localeCompare(b.front));
+
+        filtered = [...startsWithMatches, ...includesMatches];
       }
       return filtered;
     }
@@ -637,7 +648,7 @@
       closeTensesModal();
     }
 
-    // Salir de cualquier estado activo o búsqueda y volver al estado normal
+    // Volver al estado normal y limpiar el foco del input de búsqueda
     function exitActiveState() {
       closeModal();
       closeTensesModal();
@@ -648,12 +659,15 @@
       const helpModal = document.getElementById('help-modal');
       if (!helpModal.classList.contains('hidden')) toggleHelpModal();
 
+      const searchInput = document.getElementById('search-input');
+      searchInput.blur(); // Quita el foco del input para que el teclado vuelva a funcionar globalmente
+
       const searchContainer = document.getElementById('search-container');
       if (!searchContainer.classList.contains('hidden')) {
         searchContainer.classList.add('hidden');
-        document.getElementById('search-input').blur();
-        filterAll();
       }
+      
+      filterAll();
 
       if (listeningForKeyFor) {
         listeningForKeyFor = null;
@@ -661,7 +675,6 @@
       }
     }
 
-    // Configuración de Atajos
     const actionLabels = {
       newCard: 'Nueva tarjeta',
       editCard: 'Editar tarjeta',
@@ -673,7 +686,7 @@
       toggleSearch: 'Barra de Búsqueda',
       toggleTheme: 'Cambiar Color de Tema',
       toggleHelp: 'Abrir Ayuda / Atajos',
-      goBack: 'Volver / Salir / Cerrar (Ej. F1 / Esc)'
+      goBack: 'Volver / Salir / Modo Normal (Ej. F1)'
     };
 
     function buildKeybindsUI() {
@@ -727,7 +740,7 @@
       if (!box.classList.contains('hidden')) {
         document.getElementById('search-input').focus();
       } else {
-        filterAll();
+        exitActiveState();
       }
     }
 
@@ -742,7 +755,6 @@
       updateView();
     }
 
-    // Nuevo: Manejador para cuando estás en la barra de búsqueda y presionas Enter
     function handleSearchKeydown(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -753,7 +765,7 @@
           currentIndex = 0;
           updateView();
           
-          // Ocultar la barra pero mantener el filtro activo para poder navegar y voltear con espacio
+          // Ocultar barra y quitar el foco del input para liberar los atajos
           document.getElementById('search-container').classList.add('hidden');
           document.getElementById('search-input').blur();
         }
@@ -824,7 +836,6 @@
 
     // Manejador global de teclado
     document.addEventListener('keydown', (e) => {
-      // 1. Reasignación de teclas
       if (listeningForKeyFor) {
         e.preventDefault();
         if (e.key === 'Escape') {
@@ -840,20 +851,18 @@
 
       const keyPressed = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
-      // 2. Si se presiona la tecla configurada para Volver / Salir (por defecto Escape, o puedes cambiarla a F1 en el menú de ayuda)
-      if (keyPressed === keybinds.goBack || e.key === 'Escape' || e.key === keybinds.goBack) {
+      // Detectar tecla de salida (F1, Escape, etc.)
+      if (keyPressed === keybinds.goBack || e.key === keybinds.goBack || e.key === 'Escape') {
         e.preventDefault();
         exitActiveState();
         return;
       }
 
-      // 3. Si estás escribiendo en la barra de búsqueda u otro input, permitimos que escriba libremente (excepto si presiona Enter o Salir)
       const activeTag = document.activeElement ? document.activeElement.tagName : '';
       if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
         return; 
       }
 
-      // 4. Atajos en pantalla principal (incluso con filtro de búsqueda activo)
       if (keyPressed === keybinds.flipCard || e.code === 'Space') { 
         e.preventDefault(); 
         flipCard(); 
