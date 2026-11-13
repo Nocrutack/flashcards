@@ -74,7 +74,7 @@
   <!-- Barra de Búsqueda Rápida -->
   <div id="search-container" class="hidden w-full max-w-md mx-auto px-4 mb-2">
     <div class="relative">
-      <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Escribe para buscar palabra..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
+      <input type="text" id="search-input" oninput="handleSearch(this.value)" onkeydown="handleSearchKeydown(event)" placeholder="Escribe y presiona Enter..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
       <button onclick="exitActiveState()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">✕</button>
     </div>
   </div>
@@ -113,7 +113,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.2
+        Sistema Híbrido de Vocabulario v3.3
       </div>
     </div>
   </div>
@@ -357,7 +357,7 @@
     let activeFilterValue = null;
     let searchQuery = '';
 
-    // Mapa de atajos por defecto con el nuevo botón "goBack" (por defecto Escape)
+    // Mapa de atajos por defecto con "goBack" configurado en Escape (puedes cambiarlo a F1 en el panel de ayuda)
     let defaultKeybinds = {
       newCard: 'n',
       editCard: 'e',
@@ -637,7 +637,7 @@
       closeTensesModal();
     }
 
-    // Función universal para salir de cualquier estado activo (Modales, Búsqueda, Menú) y volver al normal
+    // Salir de cualquier estado activo o búsqueda y volver al estado normal
     function exitActiveState() {
       closeModal();
       closeTensesModal();
@@ -661,7 +661,7 @@
       }
     }
 
-    // Configuración interactiva de Atajos
+    // Configuración de Atajos
     const actionLabels = {
       newCard: 'Nueva tarjeta',
       editCard: 'Editar tarjeta',
@@ -673,7 +673,7 @@
       toggleSearch: 'Barra de Búsqueda',
       toggleTheme: 'Cambiar Color de Tema',
       toggleHelp: 'Abrir Ayuda / Atajos',
-      goBack: 'Volver / Salir / Cerrar'
+      goBack: 'Volver / Salir / Cerrar (Ej. F1 / Esc)'
     };
 
     function buildKeybindsUI() {
@@ -709,7 +709,6 @@
       buildKeybindsUI();
     }
 
-    // Control de Menús y Vistas
     function toggleThemeMenu() { document.getElementById('theme-menu').classList.toggle('hidden'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
     
@@ -741,6 +740,24 @@
       }
       currentIndex = 0;
       updateView();
+    }
+
+    // Nuevo: Manejador para cuando estás en la barra de búsqueda y presionas Enter
+    function handleSearchKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = e.target.value.trim();
+        if (query !== '') {
+          searchQuery = query;
+          activeFilterType = 'search';
+          currentIndex = 0;
+          updateView();
+          
+          // Ocultar la barra pero mantener el filtro activo para poder navegar y voltear con espacio
+          document.getElementById('search-container').classList.add('hidden');
+          document.getElementById('search-input').blur();
+        }
+      }
     }
 
     function setTheme(hex) {
@@ -807,7 +824,7 @@
 
     // Manejador global de teclado
     document.addEventListener('keydown', (e) => {
-      // 1. Reasignación de teclas en el panel de ayuda
+      // 1. Reasignación de teclas
       if (listeningForKeyFor) {
         e.preventDefault();
         if (e.key === 'Escape') {
@@ -823,20 +840,20 @@
 
       const keyPressed = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
-      // 2. Si se presiona la tecla configurada para Volver/Cerrar (por defecto Escape)
-      if (keyPressed === keybinds.goBack || e.key === 'Escape') {
+      // 2. Si se presiona la tecla configurada para Volver / Salir (por defecto Escape, o puedes cambiarla a F1 en el menú de ayuda)
+      if (keyPressed === keybinds.goBack || e.key === 'Escape' || e.key === keybinds.goBack) {
         e.preventDefault();
         exitActiveState();
         return;
       }
 
-      // 3. Bloqueo si estás escribiendo en la barra de búsqueda u otros inputs (excepto Escape/goBack que ya se manejó arriba)
+      // 3. Si estás escribiendo en la barra de búsqueda u otro input, permitimos que escriba libremente (excepto si presiona Enter o Salir)
       const activeTag = document.activeElement ? document.activeElement.tagName : '';
       if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
         return; 
       }
 
-      // 4. Atajos normales en pantalla principal
+      // 4. Atajos en pantalla principal (incluso con filtro de búsqueda activo)
       if (keyPressed === keybinds.flipCard || e.code === 'Space') { 
         e.preventDefault(); 
         flipCard(); 
