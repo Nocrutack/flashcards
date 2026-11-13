@@ -391,7 +391,6 @@
       return category && category.includes('Verb');
     }
 
-    // Normalizador que remueve "to " inicial en verbos para comparar alfabéticamente de forma limpia
     function cleanWord(str) {
       return str.toLowerCase().replace(/^to\s+/, '').trim();
     }
@@ -408,13 +407,10 @@
       } else if (activeFilterType === 'search') {
         const q = searchQuery.toLowerCase().trim();
 
-        // Filtro estricto estilo diccionario: la palabra en inglés o español debe empezar exactamente por el prefijo buscado
+        // Filtro estricto: Solo palabras que comiencen exactamente con el prefijo introducido (ej. "a" -> "apple", "again", "are")
         filtered = filtered.filter(c => {
-          const frontRaw = c.front.toLowerCase();
           const frontClean = cleanWord(c.front);
-          const backRaw = c.back.toLowerCase();
-
-          return frontRaw.startsWith(q) || frontClean.startsWith(q) || backRaw.startsWith(q);
+          return frontClean.startsWith(q);
         });
 
         // Orden alfabético estricto A-Z
