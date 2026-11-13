@@ -35,8 +35,8 @@
   <!-- Header -->
   <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center">
     <div class="flex items-center gap-2">
-      <!-- Botón Menú Hamburguesa -->
-      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Menú de Categorías">
+      <!-- Botón Menú Hamburguesa (Tecla M) -->
+      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Menú (M)">
         ☰
       </button>
       <span id="app-badge" class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider transition-colors duration-300">Flashcards</span>
@@ -44,9 +44,15 @@
     
     <div class="flex items-center gap-2">
       <span id="counter" class="text-xs text-slate-400 font-medium">0 / 0</span>
-      <!-- Selector de Temas -->
+      
+      <!-- Botón Búsqueda (Tecla B) -->
+      <button onclick="toggleSearchBox()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Buscar (B)">
+        🔍
+      </button>
+
+      <!-- Selector de Temas (Tecla C) -->
       <div class="relative">
-        <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color">
+        <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color (C)">
           🎨
         </button>
         <div id="theme-menu" class="hidden absolute right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex gap-2 z-50">
@@ -57,11 +63,25 @@
           <button onclick="setTheme('#7c3aed')" class="w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition"></button>
         </div>
       </div>
+
+      <!-- Botón Ayuda (Tecla H) -->
+      <button onclick="toggleHelpModal()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Ayuda y Comandos (H)">
+        ❓
+      </button>
+
       <button onclick="openModal()" id="btn-add-main" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium shadow-lg transition flex items-center gap-1">
         ➕ Añadir
       </button>
     </div>
   </header>
+
+  <!-- Barra de Búsqueda Rápida (Oculta por defecto) -->
+  <div id="search-container" class="hidden w-full max-w-md mx-auto px-4 mb-2">
+    <div class="relative">
+      <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Escribe para buscar palabra..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
+      <button onclick="toggleSearchBox()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">✕</button>
+    </div>
+  </div>
 
   <!-- Sidebar / Menú Lateral de Categorías -->
   <div id="sidebar" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity">
@@ -91,15 +111,56 @@
 
           <div>
             <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Partes de la Oración</p>
-            <div id="category-filters" class="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1">
-              <!-- Se inyectarán dinámicamente o por categorías clave -->
-            </div>
+            <div id="category-filters" class="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1"></div>
           </div>
         </div>
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v2.0
+        Sistema Híbrido de Vocabulario v3.0
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Ayuda y Comandos (Tecla H) -->
+  <div id="help-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">⌨️ Atajos de Teclado</h3>
+        <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+      <div class="space-y-2.5 text-sm text-slate-300">
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Nueva tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">N</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Editar tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">E</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Borrar tarjeta actual</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Supr / Backspace</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Voltear tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Espacio</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Tarjeta Siguiente / Anterior</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">➔ / ⬅</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Abrir / Cerrar Menú</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">M</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Barra de Búsqueda</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">B</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Cambiar Color de Tema</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">C</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Abrir Ayuda</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">H</kbd></div>
+        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Cerrar Modales</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Escape</kbd></div>
+      </div>
+      <button onclick="toggleHelpModal()" class="w-full mt-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition">Entendido</button>
+    </div>
+  </div>
+
+  <!-- Modal de los 12 Tiempos Verbales -->
+  <div id="tenses-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-lg rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-base font-bold text-indigo-400">⏱️ Conjugación: <span id="tense-word-title" class="text-white"></span></h3>
+        <button onclick="closeTensesModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-400 mb-4">Edita y guarda las formas verbales para los 12 tiempos principales:</p>
+      
+      <div id="tenses-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-5">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <div class="flex gap-2">
+        <button type="button" onclick="closeTensesModal()" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-sm font-medium transition">Cancelar</button>
+        <button type="button" onclick="saveTenses()" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition shadow">Guardar Tiempos</button>
       </div>
     </div>
   </div>
@@ -115,8 +176,8 @@
 
     <div id="empty-state" class="hidden text-center py-12">
       <div class="text-5xl mb-3">📭</div>
-      <h3 class="text-lg font-semibold text-slate-300">No hay tarjetas en esta vista</h3>
-      <p class="text-sm text-slate-500 mt-1 mb-4">Agrega nuevas palabras o cambia de filtro.</p>
+      <h3 class="text-lg font-semibold text-slate-300">No hay tarjetas encontradas</h3>
+      <p class="text-sm text-slate-500 mt-1 mb-4">Agrega nuevas palabras o cambia el filtro de búsqueda.</p>
       <div class="flex flex-col gap-2">
         <button onclick="openModal()" id="btn-empty-add" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium shadow">Crear tarjeta</button>
         <button onclick="loadDefaultCards()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm hover:bg-slate-700">Cargar vocabulario base</button>
@@ -134,8 +195,10 @@
               <span id="card-badge-cat" class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-medium rounded truncate max-w-[120px]">Noun</span>
             </div>
             <div class="flex gap-1.5">
-              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
-              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
+              <!-- Botón Ver 12 Tiempos (Solo visible si es verbo) -->
+              <button id="btn-tenses-view" onclick="event.stopPropagation(); openTensesModal()" class="hidden px-2 py-1 text-xs bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg hover:bg-amber-600/50 transition font-medium" title="Ver 12 Tiempos Verbales">⏱️ Tiempos</button>
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar (E)">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar (Supr)">🗑️</button>
               <button onclick="event.stopPropagation(); speakWord()" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white transition" title="Pronunciar">🔊</button>
             </div>
           </div>
@@ -150,8 +213,8 @@
           <div class="flex justify-between items-center">
             <span class="text-xs uppercase tracking-widest text-emerald-400 font-semibold">Español</span>
             <div class="flex gap-1.5">
-              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
-              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar (E)">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar (Supr)">🗑️</button>
             </div>
           </div>
           <div class="text-center my-auto">
@@ -169,19 +232,18 @@
 
   </main>
 
-  <!-- Controls Footer -->
+  <!-- Controls Footer (Simplificado sin el botón repetido de borrar tarjeta) -->
   <footer id="nav-controls" class="w-full max-w-md mx-auto p-4 flex flex-col gap-3">
     <div class="flex justify-between items-center gap-3">
       <button onclick="prevCard()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-medium rounded-xl transition text-sm">⬅️ Anterior</button>
       <button onclick="nextCard()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-medium rounded-xl transition text-sm">Siguiente ➡️</button>
     </div>
-    <div class="flex justify-between items-center text-xs text-slate-500 px-2">
-      <button onclick="deleteCurrentCard()" class="hover:text-red-400 transition">🗑️ Borrar esta tarjeta</button>
-      <button onclick="clearAllCards()" class="hover:text-slate-300 transition">⚠️ Borrar todo</button>
+    <div class="flex justify-center items-center text-xs text-slate-500 px-2">
+      <button onclick="clearAllCards()" class="hover:text-red-400 transition">⚠️ Borrar todo el diccionario</button>
     </div>
   </footer>
 
-  <!-- Modal Crear / Editar con Taxonomía Completa -->
+  <!-- Modal Crear / Editar -->
   <div id="card-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Nueva Tarjeta</h3>
@@ -196,7 +258,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <!-- Nivel Oxford -->
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Nivel Oxford</label>
             <select id="input-level" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
@@ -208,7 +269,6 @@
             </select>
           </div>
 
-          <!-- Categoría Gramatical Exhaustiva -->
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Parte de la Oración</label>
             <select id="input-category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
@@ -287,8 +347,8 @@
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Contexto, Formas Verbales o Notas (Opcional)</label>
-          <textarea id="input-context" rows="2" placeholder="Ej. run - ran - run / Usado en movimiento..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm resize-none"></textarea>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Contexto o Notas de uso (Opcional)</label>
+          <textarea id="input-context" rows="2" placeholder="Ej. Usado frecuentemente..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm resize-none"></textarea>
         </div>
 
         <div class="flex gap-2 mt-2">
@@ -306,9 +366,16 @@
     let editingIndex = null;
     let currentThemeHex = localStorage.getItem('themeHex') || '#4f46e5';
     
-    // Variables de filtrado activo
-    let activeFilterType = 'all'; // 'all', 'level', 'category'
+    let activeFilterType = 'all'; // 'all', 'level', 'category', 'search'
     let activeFilterValue = null;
+    let searchQuery = '';
+
+    const tenseNames = [
+      "Presente Simple", "Pasado Simple", "Futuro Simple",
+      "Presente Continuo", "Pasado Continuo", "Futuro Continuo",
+      "Presente Perfecto", "Pasado Perfecto", "Futuro Perfecto",
+      "Presente Perf. Cont.", "Pasado Perf. Cont.", "Futuro Perf. Cont."
+    ];
 
     function initApp() {
       setTheme(currentThemeHex);
@@ -316,13 +383,21 @@
       updateView();
     }
 
+    function isVerb(category) {
+      return category && category.includes('Verb');
+    }
+
     function getActiveCards() {
+      let filtered = cards;
       if (activeFilterType === 'level') {
-        return cards.filter(c => c.level === activeFilterValue);
+        filtered = cards.filter(c => c.level === activeFilterValue);
       } else if (activeFilterType === 'category') {
-        return cards.filter(c => c.category === activeFilterValue);
+        filtered = cards.filter(c => c.category === activeFilterValue);
+      } else if (activeFilterType === 'search') {
+        const q = searchQuery.toLowerCase();
+        filtered = cards.filter(c => c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q));
       }
-      return cards;
+      return filtered;
     }
 
     function updateView() {
@@ -330,20 +405,20 @@
       document.getElementById('count-all').innerText = cards.length;
 
       if (cards.length === 0) {
-        showEmptyState(true, "No hay tarjetas");
+        showEmptyState(true, "No hay tarjetas guardadas");
       } else if (activeCards.length === 0) {
-        showEmptyState(true, `No hay tarjetas con el filtro: ${activeFilterValue}`);
+        showEmptyState(true, "No se encontraron coincidencias");
       } else {
         showEmptyState(false);
         if (currentIndex >= activeCards.length) currentIndex = 0;
         renderCard();
       }
 
-      // Actualizar banner de filtro
       const banner = document.getElementById('filter-banner');
       if (activeFilterType !== 'all') {
         banner.classList.remove('hidden');
-        document.getElementById('filter-text').innerText = `Filtrando por ${activeFilterType === 'level' ? 'Nivel Oxford' : 'Categoría'}: ${activeFilterValue} (${activeCards.length})`;
+        let text = activeFilterType === 'level' ? `Nivel Oxford: ${activeFilterValue}` : activeFilterType === 'category' ? `Categoría: ${activeFilterValue}` : `Búsqueda: "${searchQuery}"`;
+        document.getElementById('filter-text').innerText = `${text} (${activeCards.length})`;
       } else {
         banner.classList.add('hidden');
       }
@@ -369,6 +444,13 @@
       document.getElementById('card-badge-level').innerText = card.level || 'A1';
       document.getElementById('card-badge-cat').innerText = card.category || 'Common Noun';
       
+      const btnTenses = document.getElementById('btn-tenses-view');
+      if (isVerb(card.category)) {
+        btnTenses.classList.remove('hidden');
+      } else {
+        btnTenses.classList.add('hidden');
+      }
+
       const contextWrapper = document.getElementById('card-context-wrapper');
       const contextText = document.getElementById('card-context-text');
       if (card.context && card.context.trim() !== '') {
@@ -423,8 +505,6 @@
       const activeCards = getActiveCards();
       if (activeCards.length === 0) return;
       const cardToEdit = activeCards[currentIndex];
-      
-      // Encontrar índice real en el array maestro 'cards'
       editingIndex = cards.findIndex(c => c === cardToEdit);
 
       document.getElementById('modal-title').innerText = "Editar Tarjeta";
@@ -450,9 +530,9 @@
       const context = document.getElementById('input-context').value.trim();
 
       if (editingIndex !== null && editingIndex >= 0) {
-        cards[editingIndex] = { front, back, level, category, context };
+        cards[editingIndex] = { ...cards[editingIndex], front, back, level, category, context };
       } else {
-        cards.push({ front, back, level, category, context });
+        cards.push({ front, back, level, category, context, tenses: Array(12).fill('') });
         currentIndex = getActiveCards().length - 1;
       }
 
@@ -477,7 +557,7 @@
     }
 
     function clearAllCards() {
-      if (confirm("¿Estás seguro de borrar todas las tarjetas?")) {
+      if (confirm("¿Estás seguro de borrar todo el diccionario?")) {
         cards = [];
         localStorage.removeItem('flashcards');
         activeFilterType = 'all';
@@ -488,10 +568,9 @@
 
     function loadDefaultCards() {
       cards = [
-        { front: "Apple", back: "Manzana", level: "A1", category: "Common Noun", context: "Sustantivo contable común." },
-        { front: "To run", back: "Correr", level: "A1", category: "Action / Dynamic Verb", context: "run - ran - run" },
-        { front: "Although", back: "Aunque", level: "B1", category: "Subordinating Conjunction", context: "Conector de concesión." },
-        { front: "Quickly", back: "Rápidamente", level: "A2", category: "Adverb of Manner", context: "Modifica al verbo indicando modo." }
+        { front: "Apple", back: "Manzana", level: "A1", category: "Common Noun", context: "Sustantivo común contable", tenses: Array(12).fill('') },
+        { front: "To run", back: "Correr", level: "A1", category: "Action / Dynamic Verb", context: "Verbo irregular de movimiento", tenses: ["run", "ran", "run", "running", "running", "running", "have run", "had run", "will have run", "have been running", "had been running", "will have been running"] },
+        { front: "Although", back: "Aunque", level: "B1", category: "Subordinating Conjunction", context: "Conector de concesión", tenses: Array(12).fill('') }
       ];
       localStorage.setItem('flashcards', JSON.stringify(cards));
       activeFilterType = 'all';
@@ -509,12 +588,75 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    function toggleThemeMenu() {
-      document.getElementById('theme-menu').classList.toggle('hidden');
+    // Funciones para la Modal de los 12 Tiempos
+    function openTensesModal() {
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      const card = activeCards[currentIndex];
+      
+      document.getElementById('tense-word-title').innerText = card.front;
+      if (!card.tenses) card.tenses = Array(12).fill('');
+
+      const grid = document.getElementById('tenses-grid');
+      grid.innerHTML = '';
+
+      tenseNames.forEach((name, idx) => {
+        const div = document.createElement('div');
+        div.className = "flex flex-col gap-1";
+        div.innerHTML = `
+          <label class="text-[11px] font-semibold text-slate-400">${name}</label>
+          <input type="text" id="tense-input-${idx}" value="${card.tenses[idx] || ''}" placeholder="Ej. I ${name.toLowerCase()}..." class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-xs focus:outline-none focus:border-indigo-500 transition">
+        `;
+        grid.appendChild(div);
+      });
+
+      document.getElementById('tenses-modal').classList.remove('hidden');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('hidden');
+    function closeTensesModal() {
+      document.getElementById('tenses-modal').classList.add('hidden');
+    }
+
+    function saveTenses() {
+      const activeCards = getActiveCards();
+      const card = activeCards[currentIndex];
+      const realIndex = cards.findIndex(c => c === card);
+
+      if (realIndex > -1) {
+        if (!cards[realIndex].tenses) cards[realIndex].tenses = Array(12).fill('');
+        for (let i = 0; i < 12; i++) {
+          const val = document.getElementById(`tense-input-${i}`).value.trim();
+          cards[realIndex].tenses[i] = val;
+        }
+        localStorage.setItem('flashcards', JSON.stringify(cards));
+      }
+      closeTensesModal();
+    }
+
+    // Control de Menús y Vistas
+    function toggleThemeMenu() { document.getElementById('theme-menu').classList.toggle('hidden'); }
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
+    function toggleHelpModal() { document.getElementById('help-modal').classList.toggle('hidden'); }
+    
+    function toggleSearchBox() {
+      const box = document.getElementById('search-container');
+      box.classList.toggle('hidden');
+      if (!box.classList.contains('hidden')) {
+        document.getElementById('search-input').focus();
+      } else {
+        filterAll();
+      }
+    }
+
+    function handleSearch(query) {
+      searchQuery = query.trim();
+      if (searchQuery === '') {
+        activeFilterType = 'all';
+      } else {
+        activeFilterType = 'search';
+      }
+      currentIndex = 0;
+      updateView();
     }
 
     function setTheme(hex) {
@@ -535,8 +677,11 @@
     function filterAll() {
       activeFilterType = 'all';
       activeFilterValue = null;
+      searchQuery = '';
+      document.getElementById('search-input').value = '';
+      document.getElementById('search-container').classList.add('hidden');
       currentIndex = 0;
-      toggleSidebar();
+      if (!document.getElementById('sidebar').classList.contains('hidden')) toggleSidebar();
       updateView();
     }
 
@@ -559,8 +704,6 @@
     function buildSidebarCategories() {
       const container = document.getElementById('category-filters');
       container.innerHTML = '';
-
-      // Obtener categorías únicas presentes en las tarjetas guardadas
       const categories = [...new Set(cards.map(c => c.category))].sort();
 
       if (categories.length === 0) {
@@ -578,15 +721,25 @@
       });
     }
 
-    // Navegación con teclado definitiva
+    // Navegación con teclado completa de 10 atajos
     document.addEventListener('keydown', (e) => {
       const modal = document.getElementById('card-modal');
-      const isModalOpen = !modal.classList.contains('hidden');
+      const sidebar = document.getElementById('sidebar');
+      const helpModal = document.getElementById('help-modal');
+      const tensesModal = document.getElementById('tenses-modal');
+      
+      const isAnyModalOpen = !modal.classList.contains('hidden') || 
+                             !sidebar.classList.contains('hidden') || 
+                             !helpModal.classList.contains('hidden') || 
+                             !tensesModal.classList.contains('hidden');
 
-      if (isModalOpen) {
+      if (isAnyModalOpen) {
         if (e.key === 'Escape') {
           e.preventDefault();
           closeModal();
+          if (!sidebar.classList.contains('hidden')) toggleSidebar();
+          if (!helpModal.classList.contains('hidden')) toggleHelpModal();
+          if (!tensesModal.classList.contains('hidden')) closeTensesModal();
         }
         return; 
       }
@@ -613,6 +766,22 @@
       else if (key === 'e' || code === 'KeyE') { 
         e.preventDefault();
         editCurrentCard(); 
+      }
+      else if (key === 'm' || code === 'KeyM') { 
+        e.preventDefault();
+        toggleSidebar(); 
+      }
+      else if (key === 'b' || code === 'KeyB') { 
+        e.preventDefault();
+        toggleSearchBox(); 
+      }
+      else if (key === 'c' || code === 'KeyC') { 
+        e.preventDefault();
+        toggleThemeMenu(); 
+      }
+      else if (key === 'h' || code === 'KeyH') { 
+        e.preventDefault();
+        toggleHelpModal(); 
       }
       else if (key === 'delete' || code === 'Delete' || key === 'backspace' || code === 'Backspace') { 
         e.preventDefault();
