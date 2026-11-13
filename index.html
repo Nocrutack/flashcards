@@ -74,7 +74,7 @@
   <!-- Barra de Búsqueda Rápida -->
   <div id="search-container" class="hidden w-full max-w-md mx-auto px-4 mb-2">
     <div class="relative">
-      <input type="text" id="search-input" oninput="handleSearch(this.value)" onkeydown="handleSearchKeydown(event)" placeholder="Escribe y presiona Enter..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
+      <input type="text" id="search-input" oninput="handleSearch(this.value)" onkeydown="handleSearchKeydown(event)" placeholder="Escribe prefijo (ej. a, ar) y presiona Enter..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
       <button onclick="exitActiveState()" class="absolute right-3 top-2.5 text-slate-400 hover:text-white text-xs">✕</button>
     </div>
   </div>
@@ -113,7 +113,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.4
+        Sistema Híbrido de Vocabulario v3.5
       </div>
     </div>
   </div>
@@ -125,7 +125,7 @@
         <h3 class="text-lg font-bold text-white flex items-center gap-2">⌨️ Configurar Atajos</h3>
         <button onclick="exitActiveState()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
       </div>
-      <p class="text-xs text-slate-400 mb-4">Haz clic en una tecla para cambiarla por la que prefieras (Ej. F1 para volver):</p>
+      <p class="text-xs text-slate-400 mb-4">Haz clic en una tecla para cambiarla por la que prefieras:</p>
       
       <div id="keybinds-list" class="space-y-2 text-sm text-slate-300 mb-5"></div>
 
@@ -368,7 +368,7 @@
       toggleSearch: 'b',
       toggleTheme: 'c',
       toggleHelp: 'h',
-      goBack: 'Escape' // Puedes cambiarlo a F1 en el panel de ayuda
+      goBack: 'Escape'
     };
 
     let keybinds = JSON.parse(localStorage.getItem('appKeybinds')) || { ...defaultKeybinds };
@@ -391,27 +391,34 @@
       return category && category.includes('Verb');
     }
 
+    // Normalizador que remueve "to " inicial en verbos para comparar alfabéticamente de forma limpia
+    function cleanWord(str) {
+      return str.toLowerCase().replace(/^to\s+/, '').trim();
+    }
+
     function getActiveCards() {
       let filtered = [...cards];
 
       if (activeFilterType === 'level') {
         filtered = filtered.filter(c => c.level === activeFilterValue);
-        filtered.sort((a, b) => a.front.localeCompare(b.front));
+        filtered.sort((a, b) => cleanWord(a.front).localeCompare(cleanWord(b.front)));
       } else if (activeFilterType === 'category') {
         filtered = filtered.filter(c => c.category === activeFilterValue);
-        filtered.sort((a, b) => a.front.localeCompare(b.front));
+        filtered.sort((a, b) => cleanWord(a.front).localeCompare(cleanWord(b.front)));
       } else if (activeFilterType === 'search') {
-        const q = searchQuery.toLowerCase();
-        
-        // Separar las que empiezan exactamente con la letra/palabra de las que solo la contienen
-        const startsWithMatches = filtered.filter(c => c.front.toLowerCase().startsWith(q) || c.back.toLowerCase().startsWith(q));
-        const includesMatches = filtered.filter(c => !c.front.toLowerCase().startsWith(q) && !c.back.toLowerCase().startsWith(q) && (c.front.toLowerCase().includes(q) || c.back.toLowerCase().includes(q)));
+        const q = searchQuery.toLowerCase().trim();
 
-        // Ordenar alfabéticamente (A-Z) ambos grupos
-        startsWithMatches.sort((a, b) => a.front.localeCompare(b.front));
-        includesMatches.sort((a, b) => a.front.localeCompare(b.front));
+        // Filtro estricto estilo diccionario: la palabra en inglés o español debe empezar exactamente por el prefijo buscado
+        filtered = filtered.filter(c => {
+          const frontRaw = c.front.toLowerCase();
+          const frontClean = cleanWord(c.front);
+          const backRaw = c.back.toLowerCase();
 
-        filtered = [...startsWithMatches, ...includesMatches];
+          return frontRaw.startsWith(q) || frontClean.startsWith(q) || backRaw.startsWith(q);
+        });
+
+        // Orden alfabético estricto A-Z
+        filtered.sort((a, b) => cleanWord(a.front).localeCompare(cleanWord(b.front)));
       }
       return filtered;
     }
@@ -423,7 +430,7 @@
       if (cards.length === 0) {
         showEmptyState(true, "No hay tarjetas guardadas");
       } else if (activeCards.length === 0) {
-        showEmptyState(true, "No se encontraron coincidencias");
+        showEmptyState(true, `No hay coincidencias que inicien con "${searchQuery}"`);
       } else {
         showEmptyState(false);
         if (currentIndex >= activeCards.length) currentIndex = 0;
@@ -433,7 +440,7 @@
       const banner = document.getElementById('filter-banner');
       if (activeFilterType !== 'all') {
         banner.classList.remove('hidden');
-        let text = activeFilterType === 'level' ? `Nivel Oxford: ${activeFilterValue}` : activeFilterType === 'category' ? `Categoría: ${activeFilterValue}` : `Búsqueda: "${searchQuery}"`;
+        let text = activeFilterType === 'level' ? `Nivel Oxford: ${activeFilterValue}` : activeFilterType === 'category' ? `Categoría: ${activeFilterValue}` : `Diccionario: "${searchQuery}"`;
         document.getElementById('filter-text').innerText = `${text} (${activeCards.length})`;
       } else {
         banner.classList.add('hidden');
@@ -648,7 +655,6 @@
       closeTensesModal();
     }
 
-    // Volver al estado normal y limpiar el foco del input de búsqueda
     function exitActiveState() {
       closeModal();
       closeTensesModal();
@@ -660,7 +666,7 @@
       if (!helpModal.classList.contains('hidden')) toggleHelpModal();
 
       const searchInput = document.getElementById('search-input');
-      searchInput.blur(); // Quita el foco del input para que el teclado vuelva a funcionar globalmente
+      searchInput.blur();
 
       const searchContainer = document.getElementById('search-container');
       if (!searchContainer.classList.contains('hidden')) {
@@ -686,7 +692,7 @@
       toggleSearch: 'Barra de Búsqueda',
       toggleTheme: 'Cambiar Color de Tema',
       toggleHelp: 'Abrir Ayuda / Atajos',
-      goBack: 'Volver / Salir / Modo Normal (Ej. F1)'
+      goBack: 'Volver / Salir / Modo Normal'
     };
 
     function buildKeybindsUI() {
@@ -765,7 +771,6 @@
           currentIndex = 0;
           updateView();
           
-          // Ocultar barra y quitar el foco del input para liberar los atajos
           document.getElementById('search-container').classList.add('hidden');
           document.getElementById('search-input').blur();
         }
@@ -851,7 +856,6 @@
 
       const keyPressed = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
-      // Detectar tecla de salida (F1, Escape, etc.)
       if (keyPressed === keybinds.goBack || e.key === keybinds.goBack || e.key === 'Escape') {
         e.preventDefault();
         exitActiveState();
