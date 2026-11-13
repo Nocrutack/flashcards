@@ -234,6 +234,7 @@
       document.getElementById('input-back').value = '';
       document.getElementById('input-context').value = '';
       document.getElementById('card-modal').classList.remove('hidden');
+      document.getElementById('input-front').focus();
     }
 
     function editCurrentCard() {
@@ -245,6 +246,7 @@
       document.getElementById('input-back').value = card.back;
       document.getElementById('input-context').value = card.context || '';
       document.getElementById('card-modal').classList.remove('hidden');
+      document.getElementById('input-front').focus();
     }
 
     function closeModal() {
@@ -335,12 +337,44 @@
       });
     }
 
-    // Navegación con teclado
+    // Navegación avanzada con teclado
     document.addEventListener('keydown', (e) => {
-      if (document.getElementById('card-modal').classList.contains('hidden')) {
-        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
-        if (e.code === 'ArrowRight') nextCard();
-        if (e.code === 'ArrowLeft') prevCard();
+      const modal = document.getElementById('card-modal');
+      const isModalOpen = !modal.classList.contains('hidden');
+
+      // Si el modal está abierto
+      if (isModalOpen) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeModal();
+        }
+        return; // No activar otros atajos mientras se escribe en el modal
+      }
+
+      // Si estamos en la pantalla principal de tarjetas
+      if (e.code === 'Space') { 
+        e.preventDefault(); 
+        flipCard(); 
+      }
+      else if (e.code === 'ArrowRight') { 
+        e.preventDefault();
+        nextCard(); 
+      }
+      else if (e.code === 'ArrowLeft') { 
+        e.preventDefault();
+        prevCard(); 
+      }
+      else if (e.key === 'n' || e.key === 'N') { 
+        e.preventDefault();
+        openModal(); 
+      }
+      else if (e.key === 'e' || e.key === 'E') { 
+        e.preventDefault();
+        editCurrentCard(); 
+      }
+      else if (e.key === 'Delete' || e.key === 'Backspace') { 
+        e.preventDefault();
+        deleteCurrentCard(); 
       }
     });
 
