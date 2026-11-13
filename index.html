@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flashcards Inglés-Español</title>
+  <title>Flashcards Inglés-Español Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .perspective-1000 { perspective: 1000px; }
@@ -35,22 +35,26 @@
   <!-- Header -->
   <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center">
     <div class="flex items-center gap-2">
+      <!-- Botón Menú Hamburguesa -->
+      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Menú de Categorías">
+        ☰
+      </button>
       <span id="app-badge" class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider transition-colors duration-300">Flashcards</span>
-      <span id="counter" class="text-sm text-slate-400 font-medium">0 / 0</span>
     </div>
     
     <div class="flex items-center gap-2">
-      <!-- Selector de Temas de Color -->
+      <span id="counter" class="text-xs text-slate-400 font-medium">0 / 0</span>
+      <!-- Selector de Temas -->
       <div class="relative">
         <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color">
           🎨
         </button>
         <div id="theme-menu" class="hidden absolute right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex gap-2 z-50">
-          <button onclick="setTheme('indigo', '#4f46e5')" class="w-6 h-6 rounded-full bg-indigo-600 hover:scale-110 transition"></button>
-          <button onclick="setTheme('emerald', '#059669')" class="w-6 h-6 rounded-full bg-emerald-600 hover:scale-110 transition"></button>
-          <button onclick="setTheme('rose', '#e11d48')" class="w-6 h-6 rounded-full bg-rose-600 hover:scale-110 transition"></button>
-          <button onclick="setTheme('amber', '#d97706')" class="w-6 h-6 rounded-full bg-amber-600 hover:scale-110 transition"></button>
-          <button onclick="setTheme('purple', '#7c3aed')" class="w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('#4f46e5')" class="w-6 h-6 rounded-full bg-indigo-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('#059669')" class="w-6 h-6 rounded-full bg-emerald-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('#e11d48')" class="w-6 h-6 rounded-full bg-rose-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('#d97706')" class="w-6 h-6 rounded-full bg-amber-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('#7c3aed')" class="w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition"></button>
         </div>
       </div>
       <button onclick="openModal()" id="btn-add-main" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium shadow-lg transition flex items-center gap-1">
@@ -59,13 +63,60 @@
     </div>
   </header>
 
+  <!-- Sidebar / Menú Lateral de Categorías -->
+  <div id="sidebar" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden transition-opacity">
+    <div class="absolute left-0 top-0 bottom-0 w-80 bg-slate-800 border-r border-slate-700 p-5 flex flex-col justify-between shadow-2xl overflow-y-auto">
+      <div>
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">🗂️ Explorador Lingüístico</h2>
+          <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white text-xl font-bold p-1">✕</button>
+        </div>
+
+        <div class="space-y-4 text-sm">
+          <button onclick="filterAll()" class="w-full text-left px-3 py-2.5 rounded-xl bg-indigo-600/20 text-indigo-300 font-medium hover:bg-indigo-600/30 transition flex justify-between items-center">
+            <span>📚 Todas las tarjetas (Modo Diario)</span>
+            <span id="count-all" class="text-xs bg-indigo-600/40 px-2 py-0.5 rounded-full">0</span>
+          </button>
+
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Niveles Oxford</p>
+            <div class="grid grid-cols-5 gap-1.5">
+              <button onclick="filterByLevel('A1')" class="py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center hover:border-indigo-500 font-bold text-xs">A1</button>
+              <button onclick="filterByLevel('A2')" class="py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center hover:border-indigo-500 font-bold text-xs">A2</button>
+              <button onclick="filterByLevel('B1')" class="py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center hover:border-indigo-500 font-bold text-xs">B1</button>
+              <button onclick="filterByLevel('B2')" class="py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center hover:border-indigo-500 font-bold text-xs">B2</button>
+              <button onclick="filterByLevel('C1')" class="py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-center hover:border-indigo-500 font-bold text-xs">C1</button>
+            </div>
+          </div>
+
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Partes de la Oración</p>
+            <div id="category-filters" class="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1">
+              <!-- Se inyectarán dinámicamente o por categorías clave -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
+        Sistema Híbrido de Vocabulario v2.0
+      </div>
+    </div>
+  </div>
+
   <!-- Main Container -->
   <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col items-center justify-center">
     
+    <!-- Filtro Activo Indicador -->
+    <div id="filter-banner" class="hidden mb-3 w-full bg-indigo-950/50 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-xs text-indigo-300 flex justify-between items-center">
+      <span id="filter-text">Filtro activo</span>
+      <button onclick="filterAll()" class="text-indigo-400 hover:underline font-bold">Ver todas ✕</button>
+    </div>
+
     <div id="empty-state" class="hidden text-center py-12">
       <div class="text-5xl mb-3">📭</div>
-      <h3 class="text-lg font-semibold text-slate-300">No hay tarjetas</h3>
-      <p class="text-sm text-slate-500 mt-1 mb-4">Agrega tus propias palabras o carga las de prueba.</p>
+      <h3 class="text-lg font-semibold text-slate-300">No hay tarjetas en esta vista</h3>
+      <p class="text-sm text-slate-500 mt-1 mb-4">Agrega nuevas palabras o cambia de filtro.</p>
       <div class="flex flex-col gap-2">
         <button onclick="openModal()" id="btn-empty-add" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium shadow">Crear tarjeta</button>
         <button onclick="loadDefaultCards()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm hover:bg-slate-700">Cargar vocabulario base</button>
@@ -78,8 +129,11 @@
         <!-- Front Side (Inglés) -->
         <div class="absolute inset-0 bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between backface-hidden">
           <div class="flex justify-between items-center">
-            <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Inglés</span>
-            <div class="flex gap-2">
+            <div class="flex gap-2 items-center">
+              <span id="card-badge-level" class="px-2 py-0.5 bg-indigo-500/20 text-indigo-300 text-[10px] font-bold rounded uppercase">A1</span>
+              <span id="card-badge-cat" class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-medium rounded truncate max-w-[120px]">Noun</span>
+            </div>
+            <div class="flex gap-1.5">
               <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
               <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
               <button onclick="event.stopPropagation(); speakWord()" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white transition" title="Pronunciar">🔊</button>
@@ -95,7 +149,7 @@
         <div class="absolute inset-0 bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180">
           <div class="flex justify-between items-center">
             <span class="text-xs uppercase tracking-widest text-emerald-400 font-semibold">Español</span>
-            <div class="flex gap-2">
+            <div class="flex gap-1.5">
               <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
               <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
             </div>
@@ -127,11 +181,11 @@
     </div>
   </footer>
 
-  <!-- Modal Crear / Editar -->
+  <!-- Modal Crear / Editar con Taxonomía Completa -->
   <div id="card-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
       <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Nueva Tarjeta</h3>
-      <form id="card-form" onsubmit="saveCard(event)" class="flex flex-col gap-4">
+      <form id="card-form" onsubmit="saveCard(event)" class="flex flex-col gap-3.5">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Palabra en Inglés</label>
           <input type="text" id="input-front" required placeholder="Ej. Run" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
@@ -140,10 +194,103 @@
           <label class="block text-xs font-medium text-slate-400 mb-1">Significado en Español</label>
           <input type="text" id="input-back" required placeholder="Ej. Correr" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
         </div>
-        <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Contexto o Notas de uso (Opcional)</label>
-          <textarea id="input-context" rows="2" placeholder="Ej. Usado frecuentemente como verbo de movimiento..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm resize-none"></textarea>
+
+        <div class="grid grid-cols-2 gap-2">
+          <!-- Nivel Oxford -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Nivel Oxford</label>
+            <select id="input-level" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
+              <option value="A1">A1 - Principiante</option>
+              <option value="A2">A2 - Elemental</option>
+              <option value="B1">B1 - Intermedio</option>
+              <option value="B2">B2 - Intermedio Alto</option>
+              <option value="C1">C1 - Avanzado</option>
+            </select>
+          </div>
+
+          <!-- Categoría Gramatical Exhaustiva -->
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Parte de la Oración</label>
+            <select id="input-category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
+              <optgroup label="1. Nouns (Sustantivos)">
+                <option value="Proper Noun">Proper Noun (Propio)</option>
+                <option value="Common Noun" selected>Common Noun (Común)</option>
+                <option value="Countable Noun">Countable Noun (Contable)</option>
+                <option value="Uncountable Noun">Uncountable Noun (Incontable)</option>
+                <option value="Abstract Noun">Abstract Noun (Abstracto)</option>
+                <option value="Collective Noun">Collective Noun (Colectivo)</option>
+                <option value="Compound Noun">Compound Noun (Compuesto)</option>
+              </optgroup>
+              <optgroup label="2. Pronouns (Pronombres)">
+                <option value="Personal Pronoun (Subject)">Personal Pronoun - Sujeto</option>
+                <option value="Object Pronoun">Object Pronoun - Objeto</option>
+                <option value="Possessive Pronoun">Possessive Pronoun</option>
+                <option value="Reflexive Pronoun">Reflexive Pronoun</option>
+                <option value="Intensive Pronoun">Intensive / Emphatic</option>
+                <option value="Demonstrative Pronoun">Demonstrative Pronoun</option>
+                <option value="Relative Pronoun">Relative Pronoun</option>
+                <option value="Interrogative Pronoun">Interrogative Pronoun</option>
+                <option value="Indefinite Pronoun">Indefinite Pronoun</option>
+              </optgroup>
+              <optgroup label="3. Verbs (Verbos)">
+                <option value="Action / Dynamic Verb">Action / Dynamic Verb</option>
+                <option value="Stative Verb">Stative Verb (Estado)</option>
+                <option value="Auxiliary Verb">Auxiliary Verb (Auxiliar)</option>
+                <option value="Modal Verb">Modal Verb (Modal)</option>
+                <option value="Transitive Verb">Transitive Verb</option>
+                <option value="Intransitive Verb">Intransitive Verb</option>
+                <option value="Linking Verb">Linking Verb (Copulativo)</option>
+                <option value="Phrasal Verb">Phrasal Verb</option>
+              </optgroup>
+              <optgroup label="4. Adjectives (Adjetivos)">
+                <option value="Descriptive Adjective">Descriptive / Qualitative</option>
+                <option value="Quantitative Adjective">Quantitative</option>
+                <option value="Demonstrative Adjective">Demonstrative</option>
+                <option value="Possessive Adjective">Possessive</option>
+                <option value="Interrogative Adjective">Interrogative</option>
+                <option value="Proper Adjective">Proper</option>
+                <option value="Compound Adjective">Compound</option>
+              </optgroup>
+              <optgroup label="5. Adverbs (Adverbios)">
+                <option value="Adverb of Manner">Adverb of Manner (Modo)</option>
+                <option value="Adverb of Time">Adverb of Time (Tiempo)</option>
+                <option value="Adverb of Place">Adverb of Place (Lugar)</option>
+                <option value="Adverb of Frequency">Adverb of Frequency (Frecuencia)</option>
+                <option value="Adverb of Degree">Adverb of Degree / Intensity</option>
+                <option value="Conjunctive Adverb">Conjunctive Adverb</option>
+              </optgroup>
+              <optgroup label="6. Prepositions (Preposiciones)">
+                <option value="Preposition of Place">Preposition of Place</option>
+                <option value="Preposition of Time">Preposition of Time</option>
+                <option value="Preposition of Direction">Preposition of Direction</option>
+                <option value="Prepositional Phrase">Prepositional Phrase</option>
+              </optgroup>
+              <optgroup label="7. Conjunctions (Conjunciones)">
+                <option value="Coordinating Conjunction">Coordinating (FANBOYS)</option>
+                <option value="Subordinating Conjunction">Subordinating</option>
+                <option value="Correlative Conjunction">Correlative</option>
+              </optgroup>
+              <optgroup label="8. Interjections">
+                <option value="Interjection">Interjection (Interjección)</option>
+              </optgroup>
+              <optgroup label="9. Determiners (Determinantes)">
+                <option value="Article">Article (The, A, An)</option>
+                <option value="Determiner - Demonstrative">Demonstrative Determiner</option>
+                <option value="Determiner - Possessive">Possessive Determiner</option>
+                <option value="Quantifier">Quantifier (Some, Any, All...)</option>
+              </optgroup>
+              <optgroup label="10. Particles">
+                <option value="Particle">Particle (Partícula)</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Contexto, Formas Verbales o Notas (Opcional)</label>
+          <textarea id="input-context" rows="2" placeholder="Ej. run - ran - run / Usado en movimiento..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm resize-none"></textarea>
+        </div>
+
         <div class="flex gap-2 mt-2">
           <button type="button" onclick="closeModal()" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl font-medium text-sm transition">Cancelar</button>
           <button type="submit" id="modal-submit-btn" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition shadow">Guardar</button>
@@ -158,38 +305,69 @@
     let isFlipped = false;
     let editingIndex = null;
     let currentThemeHex = localStorage.getItem('themeHex') || '#4f46e5';
-
-    const hexToTailwind = {
-      '#4f46e5': 'indigo',
-      '#059669': 'emerald',
-      '#e11d48': 'rose',
-      '#d97706': 'amber',
-      '#7c3aed': 'purple'
-    };
+    
+    // Variables de filtrado activo
+    let activeFilterType = 'all'; // 'all', 'level', 'category'
+    let activeFilterValue = null;
 
     function initApp() {
-      applyTheme(currentThemeHex);
+      setTheme(currentThemeHex);
+      buildSidebarCategories();
+      updateView();
+    }
+
+    function getActiveCards() {
+      if (activeFilterType === 'level') {
+        return cards.filter(c => c.level === activeFilterValue);
+      } else if (activeFilterType === 'category') {
+        return cards.filter(c => c.category === activeFilterValue);
+      }
+      return cards;
+    }
+
+    function updateView() {
+      const activeCards = getActiveCards();
+      document.getElementById('count-all').innerText = cards.length;
+
       if (cards.length === 0) {
-        showEmptyState(true);
+        showEmptyState(true, "No hay tarjetas");
+      } else if (activeCards.length === 0) {
+        showEmptyState(true, `No hay tarjetas con el filtro: ${activeFilterValue}`);
       } else {
         showEmptyState(false);
+        if (currentIndex >= activeCards.length) currentIndex = 0;
         renderCard();
+      }
+
+      // Actualizar banner de filtro
+      const banner = document.getElementById('filter-banner');
+      if (activeFilterType !== 'all') {
+        banner.classList.remove('hidden');
+        document.getElementById('filter-text').innerText = `Filtrando por ${activeFilterType === 'level' ? 'Nivel Oxford' : 'Categoría'}: ${activeFilterValue} (${activeCards.length})`;
+      } else {
+        banner.classList.add('hidden');
       }
     }
 
-    function showEmptyState(isEmpty) {
+    function showEmptyState(isEmpty, message = "") {
       document.getElementById('card-container').classList.toggle('hidden', isEmpty);
       document.getElementById('nav-controls').classList.toggle('hidden', isEmpty);
       document.getElementById('empty-state').classList.toggle('hidden', !isEmpty);
+      if (isEmpty && message) {
+        document.querySelector('#empty-state h3').innerText = message;
+      }
     }
 
     function renderCard() {
-      if (cards.length === 0) return;
-      if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      if (currentIndex >= activeCards.length) currentIndex = activeCards.length - 1;
       
-      const card = cards[currentIndex];
+      const card = activeCards[currentIndex];
       document.getElementById('card-front-text').innerText = card.front;
       document.getElementById('card-back-text').innerText = card.back;
+      document.getElementById('card-badge-level').innerText = card.level || 'A1';
+      document.getElementById('card-badge-cat').innerText = card.category || 'Common Noun';
       
       const contextWrapper = document.getElementById('card-context-wrapper');
       const contextText = document.getElementById('card-context-text');
@@ -200,7 +378,7 @@
         contextWrapper.classList.add('hidden');
       }
 
-      document.getElementById('counter').innerText = `${currentIndex + 1} / ${cards.length}`;
+      document.getElementById('counter').innerText = `${currentIndex + 1} / ${activeCards.length}`;
       if (isFlipped) flipCard(true);
     }
 
@@ -216,14 +394,16 @@
     }
 
     function nextCard() {
-      if (cards.length === 0) return;
-      currentIndex = (currentIndex + 1) % cards.length;
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      currentIndex = (currentIndex + 1) % activeCards.length;
       renderCard();
     }
 
     function prevCard() {
-      if (cards.length === 0) return;
-      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      currentIndex = (currentIndex - 1 + activeCards.length) % activeCards.length;
       renderCard();
     }
 
@@ -232,19 +412,27 @@
       document.getElementById('modal-title').innerText = "Nueva Tarjeta";
       document.getElementById('input-front').value = '';
       document.getElementById('input-back').value = '';
+      document.getElementById('input-level').value = 'A1';
+      document.getElementById('input-category').value = 'Common Noun';
       document.getElementById('input-context').value = '';
       document.getElementById('card-modal').classList.remove('hidden');
       document.getElementById('input-front').focus();
     }
 
     function editCurrentCard() {
-      if (cards.length === 0) return;
-      editingIndex = currentIndex;
-      const card = cards[editingIndex];
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      const cardToEdit = activeCards[currentIndex];
+      
+      // Encontrar índice real en el array maestro 'cards'
+      editingIndex = cards.findIndex(c => c === cardToEdit);
+
       document.getElementById('modal-title').innerText = "Editar Tarjeta";
-      document.getElementById('input-front').value = card.front;
-      document.getElementById('input-back').value = card.back;
-      document.getElementById('input-context').value = card.context || '';
+      document.getElementById('input-front').value = cardToEdit.front;
+      document.getElementById('input-back').value = cardToEdit.back;
+      document.getElementById('input-level').value = cardToEdit.level || 'A1';
+      document.getElementById('input-category').value = cardToEdit.category || 'Common Noun';
+      document.getElementById('input-context').value = cardToEdit.context || '';
       document.getElementById('card-modal').classList.remove('hidden');
       document.getElementById('input-front').focus();
     }
@@ -257,30 +445,34 @@
       e.preventDefault();
       const front = document.getElementById('input-front').value.trim();
       const back = document.getElementById('input-back').value.trim();
+      const level = document.getElementById('input-level').value;
+      const category = document.getElementById('input-category').value;
       const context = document.getElementById('input-context').value.trim();
 
-      if (editingIndex !== null) {
-        cards[editingIndex] = { front, back, context };
+      if (editingIndex !== null && editingIndex >= 0) {
+        cards[editingIndex] = { front, back, level, category, context };
       } else {
-        cards.push({ front, back, context });
-        currentIndex = cards.length - 1;
+        cards.push({ front, back, level, category, context });
+        currentIndex = getActiveCards().length - 1;
       }
 
       localStorage.setItem('flashcards', JSON.stringify(cards));
       closeModal();
-      showEmptyState(false);
-      renderCard();
+      buildSidebarCategories();
+      updateView();
     }
 
     function deleteCurrentCard() {
-      if (cards.length === 0) return;
-      cards.splice(currentIndex, 1);
-      localStorage.setItem('flashcards', JSON.stringify(cards));
-      if (cards.length === 0) {
-        showEmptyState(true);
-      } else {
-        if (currentIndex >= cards.length) currentIndex = cards.length - 1;
-        renderCard();
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      const cardToDelete = activeCards[currentIndex];
+      
+      const realIndex = cards.findIndex(c => c === cardToDelete);
+      if (realIndex > -1) {
+        cards.splice(realIndex, 1);
+        localStorage.setItem('flashcards', JSON.stringify(cards));
+        buildSidebarCategories();
+        updateView();
       }
     }
 
@@ -288,44 +480,46 @@
       if (confirm("¿Estás seguro de borrar todas las tarjetas?")) {
         cards = [];
         localStorage.removeItem('flashcards');
-        showEmptyState(true);
+        activeFilterType = 'all';
+        buildSidebarCategories();
+        updateView();
       }
     }
 
     function loadDefaultCards() {
       cards = [
-        { front: "Apple", back: "Manzana", context: "Sustantivo común. Fruta." },
-        { front: "To run", back: "Correr", context: "Verbo irregular: run - ran - run" },
-        { front: "Although", back: "Aunque", context: "Conectores de concesión" },
-        { front: "To achieve", back: "Lograr / Conseguir", context: "Frecuente en ámbitos profesionales y académicos." }
+        { front: "Apple", back: "Manzana", level: "A1", category: "Common Noun", context: "Sustantivo contable común." },
+        { front: "To run", back: "Correr", level: "A1", category: "Action / Dynamic Verb", context: "run - ran - run" },
+        { front: "Although", back: "Aunque", level: "B1", category: "Subordinating Conjunction", context: "Conector de concesión." },
+        { front: "Quickly", back: "Rápidamente", level: "A2", category: "Adverb of Manner", context: "Modifica al verbo indicando modo." }
       ];
       localStorage.setItem('flashcards', JSON.stringify(cards));
-      showEmptyState(false);
+      activeFilterType = 'all';
       currentIndex = 0;
-      renderCard();
+      buildSidebarCategories();
+      updateView();
     }
 
     function speakWord() {
-      if (cards.length === 0) return;
-      const word = cards[currentIndex].front;
+      const activeCards = getActiveCards();
+      if (activeCards.length === 0) return;
+      const word = activeCards[currentIndex].front;
       const utterance = new SpeechSynthesisUtterance(word);
       utterance.lang = 'en-US';
       window.speechSynthesis.speak(utterance);
     }
 
     function toggleThemeMenu() {
-      const menu = document.getElementById('theme-menu');
-      menu.classList.toggle('hidden');
+      document.getElementById('theme-menu').classList.toggle('hidden');
     }
 
-    function setTheme(themeName, hex) {
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('hidden');
+    }
+
+    function setTheme(hex) {
       currentThemeHex = hex;
       localStorage.setItem('themeHex', hex);
-      applyTheme(hex);
-      document.getElementById('theme-menu').classList.add('hidden');
-    }
-
-    function applyTheme(hex) {
       const elementsToColor = [
         document.getElementById('app-badge'),
         document.getElementById('btn-add-main'),
@@ -335,14 +529,60 @@
       elementsToColor.forEach(el => {
         if(el) el.style.backgroundColor = hex;
       });
+      document.getElementById('theme-menu').classList.add('hidden');
     }
 
-    // Navegación avanzada y atajos de teclado definitivos
+    function filterAll() {
+      activeFilterType = 'all';
+      activeFilterValue = null;
+      currentIndex = 0;
+      toggleSidebar();
+      updateView();
+    }
+
+    function filterByLevel(level) {
+      activeFilterType = 'level';
+      activeFilterValue = level;
+      currentIndex = 0;
+      toggleSidebar();
+      updateView();
+    }
+
+    function filterByCategory(cat) {
+      activeFilterType = 'category';
+      activeFilterValue = cat;
+      currentIndex = 0;
+      toggleSidebar();
+      updateView();
+    }
+
+    function buildSidebarCategories() {
+      const container = document.getElementById('category-filters');
+      container.innerHTML = '';
+
+      // Obtener categorías únicas presentes en las tarjetas guardadas
+      const categories = [...new Set(cards.map(c => c.category))].sort();
+
+      if (categories.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-500 italic p-2">No hay categorías registradas aún.</p>';
+        return;
+      }
+
+      categories.forEach(cat => {
+        const count = cards.filter(c => c.category === cat).length;
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left px-3 py-2 rounded-lg bg-slate-900/50 hover:bg-slate-700/60 border border-slate-700/50 text-xs text-slate-300 flex justify-between items-center transition";
+        btn.innerHTML = `<span class="truncate pr-2">${cat}</span><span class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px] text-slate-400">${count}</span>`;
+        btn.onclick = () => filterByCategory(cat);
+        container.appendChild(btn);
+      });
+    }
+
+    // Navegación con teclado definitiva
     document.addEventListener('keydown', (e) => {
       const modal = document.getElementById('card-modal');
       const isModalOpen = !modal.classList.contains('hidden');
 
-      // Si el modal está abierto, solo permitimos cerrar con Escape
       if (isModalOpen) {
         if (e.key === 'Escape') {
           e.preventDefault();
@@ -354,37 +594,32 @@
       const key = e.key.toLowerCase();
       const code = e.code;
 
-      // 1. Espacio: Voltear tarjeta
       if (code === 'Space') { 
         e.preventDefault(); 
         flipCard(); 
       }
-      // 2. Flecha Derecha: Siguiente
       else if (code === 'ArrowRight') { 
         e.preventDefault();
         nextCard(); 
       }
-      // 3. Flecha Izquierda: Anterior
       else if (code === 'ArrowLeft') { 
         e.preventDefault();
         prevCard(); 
       }
-      // 4. Tecla N: Nueva tarjeta (funciona con KeyN o letra n)
       else if (key === 'n' || code === 'KeyN') { 
         e.preventDefault();
         openModal(); 
       }
-      // 5. Tecla E: Editar tarjeta actual (funciona con KeyE o letra e)
       else if (key === 'e' || code === 'KeyE') { 
         e.preventDefault();
         editCurrentCard(); 
       }
-      // 6. Supr o Backspace: Borrar tarjeta actual
       else if (key === 'delete' || code === 'Delete' || key === 'backspace' || code === 'Backspace') { 
         e.preventDefault();
         deleteCurrentCard(); 
       }
     });
+
     window.onload = initApp;
   </script>
 </body>
