@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards Inglés-Español</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .perspective-1000 { perspective: 1000px; }
+    .transform-style-3d { transform-style: preserve-3d; }
+    .backface-hidden { backface-visibility: hidden; }
+    .rotate-y-180 { transform: rotateY(180deg); }
+  </style>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              DEFAULT: '#4f46e5',
+              emerald: '#059669',
+              rose: '#e11d48',
+              amber: '#d97706',
+              purple: '#7c3aed'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between select-none">
+
+  <!-- Header -->
+  <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <span id="app-badge" class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider transition-colors duration-300">Flashcards</span>
+      <span id="counter" class="text-sm text-slate-400 font-medium">0 / 0</span>
+    </div>
+    
+    <div class="flex items-center gap-2">
+      <!-- Selector de Temas de Color -->
+      <div class="relative">
+        <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color">
+          🎨
+        </button>
+        <div id="theme-menu" class="hidden absolute right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex gap-2 z-50">
+          <button onclick="setTheme('indigo', '#4f46e5')" class="w-6 h-6 rounded-full bg-indigo-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('emerald', '#059669')" class="w-6 h-6 rounded-full bg-emerald-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('rose', '#e11d48')" class="w-6 h-6 rounded-full bg-rose-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('amber', '#d97706')" class="w-6 h-6 rounded-full bg-amber-600 hover:scale-110 transition"></button>
+          <button onclick="setTheme('purple', '#7c3aed')" class="w-6 h-6 rounded-full bg-purple-600 hover:scale-110 transition"></button>
+        </div>
+      </div>
+      <button onclick="openModal()" id="btn-add-main" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium shadow-lg transition flex items-center gap-1">
+        ➕ Añadir
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col items-center justify-center">
+    
+    <div id="empty-state" class="hidden text-center py-12">
+      <div class="text-5xl mb-3">📭</div>
+      <h3 class="text-lg font-semibold text-slate-300">No hay tarjetas</h3>
+      <p class="text-sm text-slate-500 mt-1 mb-4">Agrega tus propias palabras o carga las de prueba.</p>
+      <div class="flex flex-col gap-2">
+        <button onclick="openModal()" id="btn-empty-add" class="px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium shadow">Crear tarjeta</button>
+        <button onclick="loadDefaultCards()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm hover:bg-slate-700">Cargar vocabulario base</button>
+      </div>
+    </div>
+
+    <div id="card-container" class="w-full h-80 perspective-1000 cursor-pointer relative" onclick="flipCard()">
+      <div id="card-inner" class="w-full h-full relative transform-style-3d transition-transform duration-500 rounded-2xl shadow-2xl">
+        
+        <!-- Front Side (Inglés) -->
+        <div class="absolute inset-0 bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between backface-hidden">
+          <div class="flex justify-between items-center">
+            <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold">Inglés</span>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
+              <button onclick="event.stopPropagation(); speakWord()" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white transition" title="Pronunciar">🔊</button>
+            </div>
+          </div>
+          <div class="text-center my-auto">
+            <h2 id="card-front-text" class="text-3xl font-bold tracking-tight text-white"></h2>
+          </div>
+          <div class="text-center text-xs text-slate-500">Toca para voltear 🔄</div>
+        </div>
+
+        <!-- Back Side (Español + Contexto) -->
+        <div class="absolute inset-0 bg-slate-800 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180">
+          <div class="flex justify-between items-center">
+            <span class="text-xs uppercase tracking-widest text-emerald-400 font-semibold">Español</span>
+            <div class="flex gap-2">
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
+            </div>
+          </div>
+          <div class="text-center my-auto">
+            <h2 id="card-back-text" class="text-3xl font-bold tracking-tight text-emerald-400 mb-2"></h2>
+            <div id="card-context-wrapper" class="hidden mt-3 p-3 bg-slate-900/60 rounded-xl border border-slate-700/50 text-left">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Contexto / Uso:</p>
+              <p id="card-context-text" class="text-sm text-slate-300 italic"></p>
+            </div>
+          </div>
+          <div class="text-center text-xs text-slate-500">Toca para regresar 🔄</div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Controls Footer -->
+  <footer id="nav-controls" class="w-full max-w-md mx-auto p-4 flex flex-col gap-3">
+    <div class="flex justify-between items-center gap-3">
+      <button onclick="prevCard()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-medium rounded-xl transition text-sm">⬅️ Anterior</button>
+      <button onclick="nextCard()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-medium rounded-xl transition text-sm">Siguiente ➡️</button>
+    </div>
+    <div class="flex justify-between items-center text-xs text-slate-500 px-2">
+      <button onclick="deleteCurrentCard()" class="hover:text-red-400 transition">🗑️ Borrar esta tarjeta</button>
+      <button onclick="clearAllCards()" class="hover:text-slate-300 transition">⚠️ Borrar todo</button>
+    </div>
+  </footer>
+
+  <!-- Modal Crear / Editar -->
+  <div id="card-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
+      <h3 id="modal-title" class="text-lg font-bold text-white mb-4">Nueva Tarjeta</h3>
+      <form id="card-form" onsubmit="saveCard(event)" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Palabra en Inglés</label>
+          <input type="text" id="input-front" required placeholder="Ej. Run" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Significado en Español</label>
+          <input type="text" id="input-back" required placeholder="Ej. Correr" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Contexto o Notas de uso (Opcional)</label>
+          <textarea id="input-context" rows="2" placeholder="Ej. Usado frecuentemente como verbo de movimiento..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500 transition text-sm resize-none"></textarea>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <button type="button" onclick="closeModal()" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl font-medium text-sm transition">Cancelar</button>
+          <button type="submit" id="modal-submit-btn" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition shadow">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let cards = JSON.parse(localStorage.getItem('flashcards')) || [];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let editingIndex = null;
+    let currentThemeHex = localStorage.getItem('themeHex') || '#4f46e5';
+
+    const hexToTailwind = {
+      '#4f46e5': 'indigo',
+      '#059669': 'emerald',
+      '#e11d48': 'rose',
+      '#d97706': 'amber',
+      '#7c3aed': 'purple'
+    };
+
+    function initApp() {
+      applyTheme(currentThemeHex);
+      if (cards.length === 0) {
+        showEmptyState(true);
+      } else {
+        showEmptyState(false);
+        renderCard();
+      }
+    }
+
+    function showEmptyState(isEmpty) {
+      document.getElementById('card-container').classList.toggle('hidden', isEmpty);
+      document.getElementById('nav-controls').classList.toggle('hidden', isEmpty);
+      document.getElementById('empty-state').classList.toggle('hidden', !isEmpty);
+    }
+
+    function renderCard() {
+      if (cards.length === 0) return;
+      if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+      
+      const card = cards[currentIndex];
+      document.getElementById('card-front-text').innerText = card.front;
+      document.getElementById('card-back-text').innerText = card.back;
+      
+      const contextWrapper = document.getElementById('card-context-wrapper');
+      const contextText = document.getElementById('card-context-text');
+      if (card.context && card.context.trim() !== '') {
+        contextText.innerText = card.context;
+        contextWrapper.classList.remove('hidden');
+      } else {
+        contextWrapper.classList.add('hidden');
+      }
+
+      document.getElementById('counter').innerText = `${currentIndex + 1} / ${cards.length}`;
+      if (isFlipped) flipCard(true);
+    }
+
+    function flipCard(forceReset = false) {
+      const inner = document.getElementById('card-inner');
+      if (forceReset) {
+        isFlipped = false;
+        inner.style.transform = 'rotateY(0deg)';
+      } else {
+        isFlipped = !isFlipped;
+        inner.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+      }
+    }
+
+    function nextCard() {
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex + 1) % cards.length;
+      renderCard();
+    }
+
+    function prevCard() {
+      if (cards.length === 0) return;
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      renderCard();
+    }
+
+    function openModal() {
+      editingIndex = null;
+      document.getElementById('modal-title').innerText = "Nueva Tarjeta";
+      document.getElementById('input-front').value = '';
+      document.getElementById('input-back').value = '';
+      document.getElementById('input-context').value = '';
+      document.getElementById('card-modal').classList.remove('hidden');
+    }
+
+    function editCurrentCard() {
+      if (cards.length === 0) return;
+      editingIndex = currentIndex;
+      const card = cards[editingIndex];
+      document.getElementById('modal-title').innerText = "Editar Tarjeta";
+      document.getElementById('input-front').value = card.front;
+      document.getElementById('input-back').value = card.back;
+      document.getElementById('input-context').value = card.context || '';
+      document.getElementById('card-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('card-modal').classList.add('hidden');
+    }
+
+    function saveCard(e) {
+      e.preventDefault();
+      const front = document.getElementById('input-front').value.trim();
+      const back = document.getElementById('input-back').value.trim();
+      const context = document.getElementById('input-context').value.trim();
+
+      if (editingIndex !== null) {
+        cards[editingIndex] = { front, back, context };
+      } else {
+        cards.push({ front, back, context });
+        currentIndex = cards.length - 1;
+      }
+
+      localStorage.setItem('flashcards', JSON.stringify(cards));
+      closeModal();
+      showEmptyState(false);
+      renderCard();
+    }
+
+    function deleteCurrentCard() {
+      if (cards.length === 0) return;
+      cards.splice(currentIndex, 1);
+      localStorage.setItem('flashcards', JSON.stringify(cards));
+      if (cards.length === 0) {
+        showEmptyState(true);
+      } else {
+        if (currentIndex >= cards.length) currentIndex = cards.length - 1;
+        renderCard();
+      }
+    }
+
+    function clearAllCards() {
+      if (confirm("¿Estás seguro de borrar todas las tarjetas?")) {
+        cards = [];
+        localStorage.removeItem('flashcards');
+        showEmptyState(true);
+      }
+    }
+
+    function loadDefaultCards() {
+      cards = [
+        { front: "Apple", back: "Manzana", context: "Sustantivo común. Fruta." },
+        { front: "To run", back: "Correr", context: "Verbo irregular: run - ran - run" },
+        { front: "Although", back: "Aunque", context: "Conectores de concesión" },
+        { front: "To achieve", back: "Lograr / Conseguir", context: "Frecuente en ámbitos profesionales y académicos." }
+      ];
+      localStorage.setItem('flashcards', JSON.stringify(cards));
+      showEmptyState(false);
+      currentIndex = 0;
+      renderCard();
+    }
+
+    function speakWord() {
+      if (cards.length === 0) return;
+      const word = cards[currentIndex].front;
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = 'en-US';
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function toggleThemeMenu() {
+      const menu = document.getElementById('theme-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    function setTheme(themeName, hex) {
+      currentThemeHex = hex;
+      localStorage.setItem('themeHex', hex);
+      applyTheme(hex);
+      document.getElementById('theme-menu').classList.add('hidden');
+    }
+
+    function applyTheme(hex) {
+      const elementsToColor = [
+        document.getElementById('app-badge'),
+        document.getElementById('btn-add-main'),
+        document.getElementById('btn-empty-add'),
+        document.getElementById('modal-submit-btn')
+      ];
+      elementsToColor.forEach(el => {
+        if(el) el.style.backgroundColor = hex;
+      });
+    }
+
+    // Navegación con teclado
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('card-modal').classList.contains('hidden')) {
+        if (e.code === 'Space') { e.preventDefault(); flipCard(); }
+        if (e.code === 'ArrowRight') nextCard();
+        if (e.code === 'ArrowLeft') prevCard();
+      }
+    });
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
