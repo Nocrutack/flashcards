@@ -35,8 +35,7 @@
   <!-- Header -->
   <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center">
     <div class="flex items-center gap-2">
-      <!-- Botón Menú Hamburguesa (Tecla M) -->
-      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Menú (M)">
+      <button onclick="toggleSidebar()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Menú">
         ☰
       </button>
       <span id="app-badge" class="px-3 py-1 bg-indigo-600 text-white text-xs font-bold rounded-full uppercase tracking-wider transition-colors duration-300">Flashcards</span>
@@ -45,14 +44,12 @@
     <div class="flex items-center gap-2">
       <span id="counter" class="text-xs text-slate-400 font-medium">0 / 0</span>
       
-      <!-- Botón Búsqueda (Tecla B) -->
-      <button onclick="toggleSearchBox()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Buscar (B)">
+      <button onclick="toggleSearchBox()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Buscar">
         🔍
       </button>
 
-      <!-- Selector de Temas (Tecla C) -->
       <div class="relative">
-        <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color (C)">
+        <button onclick="toggleThemeMenu()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Cambiar Color">
           🎨
         </button>
         <div id="theme-menu" class="hidden absolute right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl p-2 shadow-xl flex gap-2 z-50">
@@ -64,8 +61,7 @@
         </div>
       </div>
 
-      <!-- Botón Ayuda (Tecla H) -->
-      <button onclick="toggleHelpModal()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Ayuda y Comandos (H)">
+      <button onclick="toggleHelpModal()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 transition" title="Ayuda y Comandos">
         ❓
       </button>
 
@@ -75,7 +71,7 @@
     </div>
   </header>
 
-  <!-- Barra de Búsqueda Rápida (Oculta por defecto) -->
+  <!-- Barra de Búsqueda Rápida -->
   <div id="search-container" class="hidden w-full max-w-md mx-auto px-4 mb-2">
     <div class="relative">
       <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Escribe para buscar palabra..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition">
@@ -117,31 +113,28 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.0
+        Sistema Híbrido de Vocabulario v3.1
       </div>
     </div>
   </div>
 
-  <!-- Modal de Ayuda y Comandos (Tecla H) -->
+  <!-- Modal de Ayuda y Personalización de Comandos -->
   <div id="help-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
       <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">⌨️ Atajos de Teclado</h3>
+        <h3 class="text-lg font-bold text-white flex items-center gap-2">⌨️ Configurar Atajos</h3>
         <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-white text-xl font-bold">✕</button>
       </div>
-      <div class="space-y-2.5 text-sm text-slate-300">
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Nueva tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">N</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Editar tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">E</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Borrar tarjeta actual</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Supr / Backspace</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Voltear tarjeta</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Espacio</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Tarjeta Siguiente / Anterior</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">➔ / ⬅</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Abrir / Cerrar Menú</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">M</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Barra de Búsqueda</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">B</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Cambiar Color de Tema</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">C</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Abrir Ayuda</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">H</kbd></div>
-        <div class="flex justify-between bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50"><span>Cerrar Modales</span><kbd class="px-2 py-1 bg-slate-700 text-xs rounded text-white font-mono">Escape</kbd></div>
+      <p class="text-xs text-slate-400 mb-4">Haz clic en una tecla para cambiarla por la que prefieras:</p>
+      
+      <div id="keybinds-list" class="space-y-2 text-sm text-slate-300 mb-5">
+        <!-- Generado dinámicamente -->
       </div>
-      <button onclick="toggleHelpModal()" class="w-full mt-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition">Entendido</button>
+
+      <div class="flex gap-2">
+        <button onclick="resetKeybindings()" class="py-2 px-4 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-xs font-medium transition">Restaurar por defecto</button>
+        <button onclick="toggleHelpModal()" class="flex-1 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium transition shadow">Cerrar</button>
+      </div>
     </div>
   </div>
 
@@ -154,9 +147,7 @@
       </div>
       <p class="text-xs text-slate-400 mb-4">Edita y guarda las formas verbales para los 12 tiempos principales:</p>
       
-      <div id="tenses-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-5">
-        <!-- Generado dinámicamente -->
-      </div>
+      <div id="tenses-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-5"></div>
 
       <div class="flex gap-2">
         <button type="button" onclick="closeTensesModal()" class="flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-xl text-sm font-medium transition">Cancelar</button>
@@ -168,7 +159,6 @@
   <!-- Main Container -->
   <main class="w-full max-w-md mx-auto px-4 flex-1 flex flex-col items-center justify-center">
     
-    <!-- Filtro Activo Indicador -->
     <div id="filter-banner" class="hidden mb-3 w-full bg-indigo-950/50 border border-indigo-500/30 px-3 py-1.5 rounded-xl text-xs text-indigo-300 flex justify-between items-center">
       <span id="filter-text">Filtro activo</span>
       <button onclick="filterAll()" class="text-indigo-400 hover:underline font-bold">Ver todas ✕</button>
@@ -195,10 +185,9 @@
               <span id="card-badge-cat" class="px-2 py-0.5 bg-slate-700 text-slate-300 text-[10px] font-medium rounded truncate max-w-[120px]">Noun</span>
             </div>
             <div class="flex gap-1.5">
-              <!-- Botón Ver 12 Tiempos (Solo visible si es verbo) -->
               <button id="btn-tenses-view" onclick="event.stopPropagation(); openTensesModal()" class="hidden px-2 py-1 text-xs bg-amber-600/30 text-amber-300 border border-amber-500/40 rounded-lg hover:bg-amber-600/50 transition font-medium" title="Ver 12 Tiempos Verbales">⏱️ Tiempos</button>
-              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar (E)">✏️</button>
-              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar (Supr)">🗑️</button>
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
               <button onclick="event.stopPropagation(); speakWord()" class="p-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white transition" title="Pronunciar">🔊</button>
             </div>
           </div>
@@ -213,8 +202,8 @@
           <div class="flex justify-between items-center">
             <span class="text-xs uppercase tracking-widest text-emerald-400 font-semibold">Español</span>
             <div class="flex gap-1.5">
-              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar (E)">✏️</button>
-              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar (Supr)">🗑️</button>
+              <button onclick="event.stopPropagation(); editCurrentCard()" class="p-1.5 text-slate-400 hover:text-white bg-slate-700/50 rounded-lg transition" title="Editar">✏️</button>
+              <button onclick="event.stopPropagation(); deleteCurrentCard()" class="p-1.5 text-red-400 hover:text-red-300 bg-slate-700/50 rounded-lg transition" title="Eliminar">🗑️</button>
             </div>
           </div>
           <div class="text-center my-auto">
@@ -232,7 +221,7 @@
 
   </main>
 
-  <!-- Controls Footer (Simplificado sin el botón repetido de borrar tarjeta) -->
+  <!-- Controls Footer -->
   <footer id="nav-controls" class="w-full max-w-md mx-auto p-4 flex flex-col gap-3">
     <div class="flex justify-between items-center gap-3">
       <button onclick="prevCard()" class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 font-medium rounded-xl transition text-sm">⬅️ Anterior</button>
@@ -366,9 +355,26 @@
     let editingIndex = null;
     let currentThemeHex = localStorage.getItem('themeHex') || '#4f46e5';
     
-    let activeFilterType = 'all'; // 'all', 'level', 'category', 'search'
+    let activeFilterType = 'all';
     let activeFilterValue = null;
     let searchQuery = '';
+
+    // Mapa de atajos por defecto personalizables
+    let defaultKeybinds = {
+      newCard: 'n',
+      editCard: 'e',
+      deleteCard: 'Delete',
+      flipCard: ' ',
+      nextCard: 'ArrowRight',
+      prevCard: 'ArrowLeft',
+      toggleMenu: 'm',
+      toggleSearch: 'b',
+      toggleTheme: 'c',
+      toggleHelp: 'h'
+    };
+
+    let keybinds = JSON.parse(localStorage.getItem('appKeybinds')) || { ...defaultKeybinds };
+    let listeningForKeyFor = null;
 
     const tenseNames = [
       "Presente Simple", "Pasado Simple", "Futuro Simple",
@@ -588,7 +594,6 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // Funciones para la Modal de los 12 Tiempos
     function openTensesModal() {
       const activeCards = getActiveCards();
       if (activeCards.length === 0) return;
@@ -633,10 +638,65 @@
       closeTensesModal();
     }
 
+    // Configuración interactiva de Atajos
+    const actionLabels = {
+      newCard: 'Nueva tarjeta',
+      editCard: 'Editar tarjeta',
+      deleteCard: 'Borrar tarjeta actual',
+      flipCard: 'Voltear tarjeta',
+      nextCard: 'Tarjeta Siguiente',
+      prevCard: 'Tarjeta Anterior',
+      toggleMenu: 'Abrir / Cerrar Menú',
+      toggleSearch: 'Barra de Búsqueda',
+      toggleTheme: 'Cambiar Color de Tema',
+      toggleHelp: 'Abrir Ayuda / Atajos'
+    };
+
+    function buildKeybindsUI() {
+      const list = document.getElementById('keybinds-list');
+      list.innerHTML = '';
+
+      Object.keys(keybinds).forEach(action => {
+        const currentKey = keybinds[action];
+        const displayKey = currentKey === ' ' ? 'Espacio' : currentKey;
+        const isListening = listeningForKeyFor === action;
+
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/50";
+        div.innerHTML = `
+          <span>${actionLabels[action] || action}</span>
+          <button onclick="startListeningFor('${action}')" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-xs rounded text-white font-mono transition ${isListening ? 'border-2 border-indigo-500 animate-pulse bg-indigo-900' : ''}">
+            ${isListening ? 'Pulsa una tecla...' : displayKey}
+          </button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function startListeningFor(action) {
+      listeningForKeyFor = action;
+      buildKeybindsUI();
+    }
+
+    function resetKeybindings() {
+      keybinds = { ...defaultKeybinds };
+      localStorage.setItem('appKeybinds', JSON.stringify(keybinds));
+      listeningForKeyFor = null;
+      buildKeybindsUI();
+    }
+
     // Control de Menús y Vistas
     function toggleThemeMenu() { document.getElementById('theme-menu').classList.toggle('hidden'); }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden'); }
-    function toggleHelpModal() { document.getElementById('help-modal').classList.toggle('hidden'); }
+    
+    function toggleHelpModal() {
+      const modal = document.getElementById('help-modal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        listeningForKeyFor = null;
+        buildKeybindsUI();
+      }
+    }
     
     function toggleSearchBox() {
       const box = document.getElementById('search-container');
@@ -721,8 +781,35 @@
       });
     }
 
-    // Navegación con teclado completa de 10 atajos
+    // Manejador global de teclado con bloqueo seguro para inputs y reasignación
     document.addEventListener('keydown', (e) => {
+      // 1. Si estamos reasignando una tecla en el panel de ayuda
+      if (listeningForKeyFor) {
+        e.preventDefault();
+        if (e.key === 'Escape') {
+          listeningForKeyFor = null;
+        } else {
+          keybinds[listeningForKeyFor] = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+          localStorage.setItem('appKeybinds', JSON.stringify(keybinds));
+          listeningForKeyFor = null;
+        }
+        buildKeybindsUI();
+        return;
+      }
+
+      // 2. Bloqueo estricto: Si el foco está en un input o textarea (barra de búsqueda, modales), NO ejecutar atajos
+      const activeTag = document.activeElement ? document.activeElement.tagName : '';
+      if (activeTag === 'INPUT' || activeTag === 'TEXTAREA' || activeTag === 'SELECT') {
+        if (e.key === 'Escape') {
+          closeModal();
+          closeTensesModal();
+          document.getElementById('search-container').classList.add('hidden');
+          document.getElementById('search-input').blur();
+          filterAll();
+        }
+        return; 
+      }
+
       const modal = document.getElementById('card-modal');
       const sidebar = document.getElementById('sidebar');
       const helpModal = document.getElementById('help-modal');
@@ -744,46 +831,46 @@
         return; 
       }
 
-      const key = e.key.toLowerCase();
-      const code = e.code;
+      const keyPressed = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
-      if (code === 'Space') { 
+      // Evaluar contra los atajos personalizados
+      if (keyPressed === keybinds.flipCard || e.code === 'Space') { 
         e.preventDefault(); 
         flipCard(); 
       }
-      else if (code === 'ArrowRight') { 
+      else if (keyPressed === keybinds.nextCard || e.code === 'ArrowRight') { 
         e.preventDefault();
         nextCard(); 
       }
-      else if (code === 'ArrowLeft') { 
+      else if (keyPressed === keybinds.prevCard || e.code === 'ArrowLeft') { 
         e.preventDefault();
         prevCard(); 
       }
-      else if (key === 'n' || code === 'KeyN') { 
+      else if (keyPressed === keybinds.newCard) { 
         e.preventDefault();
         openModal(); 
       }
-      else if (key === 'e' || code === 'KeyE') { 
+      else if (keyPressed === keybinds.editCard) { 
         e.preventDefault();
         editCurrentCard(); 
       }
-      else if (key === 'm' || code === 'KeyM') { 
+      else if (keyPressed === keybinds.toggleMenu) { 
         e.preventDefault();
         toggleSidebar(); 
       }
-      else if (key === 'b' || code === 'KeyB') { 
+      else if (keyPressed === keybinds.toggleSearch) { 
         e.preventDefault();
         toggleSearchBox(); 
       }
-      else if (key === 'c' || code === 'KeyC') { 
+      else if (keyPressed === keybinds.toggleTheme) { 
         e.preventDefault();
         toggleThemeMenu(); 
       }
-      else if (key === 'h' || code === 'KeyH') { 
+      else if (keyPressed === keybinds.toggleHelp) { 
         e.preventDefault();
         toggleHelpModal(); 
       }
-      else if (key === 'delete' || code === 'Delete' || key === 'backspace' || code === 'Backspace') { 
+      else if (keyPressed === keybinds.deleteCard || e.key === 'Delete' || e.key === 'Backspace') { 
         e.preventDefault();
         deleteCurrentCard(); 
       }
