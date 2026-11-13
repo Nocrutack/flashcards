@@ -337,47 +337,54 @@
       });
     }
 
-    // Navegación avanzada con teclado
+    // Navegación avanzada y atajos de teclado definitivos
     document.addEventListener('keydown', (e) => {
       const modal = document.getElementById('card-modal');
       const isModalOpen = !modal.classList.contains('hidden');
 
-      // Si el modal está abierto
+      // Si el modal está abierto, solo permitimos cerrar con Escape
       if (isModalOpen) {
         if (e.key === 'Escape') {
           e.preventDefault();
           closeModal();
         }
-        return; // No activar otros atajos mientras se escribe en el modal
+        return; 
       }
 
-      // Si estamos en la pantalla principal de tarjetas
-      if (e.code === 'Space') { 
+      const key = e.key.toLowerCase();
+      const code = e.code;
+
+      // 1. Espacio: Voltear tarjeta
+      if (code === 'Space') { 
         e.preventDefault(); 
         flipCard(); 
       }
-      else if (e.code === 'ArrowRight') { 
+      // 2. Flecha Derecha: Siguiente
+      else if (code === 'ArrowRight') { 
         e.preventDefault();
         nextCard(); 
       }
-      else if (e.code === 'ArrowLeft') { 
+      // 3. Flecha Izquierda: Anterior
+      else if (code === 'ArrowLeft') { 
         e.preventDefault();
         prevCard(); 
       }
-      else if (e.key === 'n' || e.key === 'N') { 
+      // 4. Tecla N: Nueva tarjeta (funciona con KeyN o letra n)
+      else if (key === 'n' || code === 'KeyN') { 
         e.preventDefault();
         openModal(); 
       }
-      else if (e.key === 'e' || e.key === 'E') { 
+      // 5. Tecla E: Editar tarjeta actual (funciona con KeyE o letra e)
+      else if (key === 'e' || code === 'KeyE') { 
         e.preventDefault();
         editCurrentCard(); 
       }
-      else if (e.key === 'Delete' || e.key === 'Backspace') { 
+      // 6. Supr o Backspace: Borrar tarjeta actual
+      else if (key === 'delete' || code === 'Delete' || key === 'backspace' || code === 'Backspace') { 
         e.preventDefault();
         deleteCurrentCard(); 
       }
     });
-
     window.onload = initApp;
   </script>
 </body>
