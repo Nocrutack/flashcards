@@ -113,7 +113,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.5
+        Sistema Híbrido de Vocabulario v3.6
       </div>
     </div>
   </div>
@@ -407,13 +407,11 @@
       } else if (activeFilterType === 'search') {
         const q = searchQuery.toLowerCase().trim();
 
-        // Filtro estricto: Solo palabras que comiencen exactamente con el prefijo introducido (ej. "a" -> "apple", "again", "are")
         filtered = filtered.filter(c => {
           const frontClean = cleanWord(c.front);
           return frontClean.startsWith(q);
         });
 
-        // Orden alfabético estricto A-Z
         filtered.sort((a, b) => cleanWord(a.front).localeCompare(cleanWord(b.front)));
       }
       return filtered;
@@ -575,14 +573,25 @@
       }
     }
 
+    // ⭐ DOBLE PROTECCIÓN DE SEGURIDAD PARA BORRAR TODO ⭐
     function clearAllCards() {
-      if (confirm("¿Estás seguro de borrar todo el diccionario?")) {
-        cards = [];
-        localStorage.removeItem('flashcards');
-        activeFilterType = 'all';
-        buildSidebarCategories();
-        updateView();
+      // Primera advertencia por ventana emergente
+      const confirmFirst = confirm("⚠️ ¡ADVERTENCIA! Estás a punto de borrar TODO tu diccionario de palabras de forma permanente. ¿Estás seguro?");
+      if (!confirmFirst) return;
+
+      // Segunda advertencia pidiendo escribir una palabra clave para confirmar
+      const confirmWord = prompt("Para confirmar el borrado total, escribe la palabra: BORRAR");
+      if (confirmWord !== "BORRAR") {
+        alert("Operación cancelada. Tus tarjetas están a salvo.");
+        return;
       }
+
+      // Si pasa ambas validaciones, procede a borrar
+      cards = [];
+      localStorage.removeItem('flashcards');
+      activeFilterType = 'all';
+      buildSidebarCategories();
+      updateView();
     }
 
     function loadDefaultCards() {
