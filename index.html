@@ -32,6 +32,21 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between select-none">
 
+  <!-- Pantalla de Inicio de Sesión / Bloqueo -->
+  <div id="login-screen" class="fixed inset-0 bg-slate-950 z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 w-full max-w-sm rounded-2xl p-6 shadow-2xl text-center">
+      <div class="text-4xl mb-3">🔐</div>
+      <h2 class="text-xl font-bold text-white mb-1">Acceso Protegido</h2>
+      <p class="text-xs text-slate-400 mb-5">Ingresa tu contraseña para acceder al diccionario.</p>
+      
+      <form onsubmit="handleLogin(event)" class="flex flex-col gap-3">
+        <input type="password" id="login-password" required placeholder="Contraseña (por defecto: 1234)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:border-indigo-500 transition text-center">
+        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition shadow">Entrar al Diccionario</button>
+      </form>
+      <p class="text-[10px] text-slate-500 mt-4">Nota: Puedes cambiar la contraseña en el código fuente.</p>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="w-full max-w-md mx-auto p-4 flex justify-between items-center">
     <div class="flex items-center gap-2">
@@ -113,7 +128,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.6
+        Sistema Híbrido de Vocabulario v3.7
       </div>
     </div>
   </div>
@@ -347,6 +362,9 @@
   </div>
 
   <script>
+    // CAMBIA AQUÍ TU CONTRASEÑA SI LO DESEAS
+    const APP_PASSWORD = "mes12";
+
     let cards = JSON.parse(localStorage.getItem('flashcards')) || [];
     let currentIndex = 0;
     let isFlipped = false;
@@ -360,7 +378,7 @@
     let defaultKeybinds = {
       newCard: 'n',
       editCard: 'e',
-      deleteCard: 'Delete',
+      deleteCard: 'none', // Desactivado por defecto para evitar borrados accidentales
       flipCard: ' ',
       nextCard: 'ArrowRight',
       prevCard: 'ArrowLeft',
@@ -380,6 +398,19 @@
       "Presente Perfecto", "Pasado Perfecto", "Futuro Perfecto",
       "Presente Perf. Cont.", "Pasado Perf. Cont.", "Futuro Perf. Cont."
     ];
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const pass = document.getElementById('login-password').value;
+      if (pass === APP_PASSWORD) {
+        document.getElementById('login-screen').classList.add('hidden');
+        initApp();
+      } else {
+        alert("Contraseña incorrecta. Intenta nuevamente (Por defecto es 1234).");
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-password').focus();
+      }
+    }
 
     function initApp() {
       setTheme(currentThemeHex);
@@ -573,20 +604,16 @@
       }
     }
 
-    // ⭐ DOBLE PROTECCIÓN DE SEGURIDAD PARA BORRAR TODO ⭐
     function clearAllCards() {
-      // Primera advertencia por ventana emergente
       const confirmFirst = confirm("⚠️ ¡ADVERTENCIA! Estás a punto de borrar TODO tu diccionario de palabras de forma permanente. ¿Estás seguro?");
       if (!confirmFirst) return;
 
-      // Segunda advertencia pidiendo escribir una palabra clave para confirmar
       const confirmWord = prompt("Para confirmar el borrado total, escribe la palabra: BORRAR");
       if (confirmWord !== "BORRAR") {
         alert("Operación cancelada. Tus tarjetas están a salvo.");
         return;
       }
 
-      // Si pasa ambas validaciones, procede a borrar
       cards = [];
       localStorage.removeItem('flashcards');
       activeFilterType = 'all';
@@ -689,7 +716,7 @@
     const actionLabels = {
       newCard: 'Nueva tarjeta',
       editCard: 'Editar tarjeta',
-      deleteCard: 'Borrar tarjeta actual',
+      deleteCard: 'Borrar tarjeta actual (Desactivado)',
       flipCard: 'Voltear tarjeta',
       nextCard: 'Tarjeta Siguiente',
       prevCard: 'Tarjeta Anterior',
@@ -908,13 +935,9 @@
         e.preventDefault();
         toggleHelpModal(); 
       }
-      else if (keyPressed === keybinds.deleteCard || e.key === 'Delete' || e.key === 'Backspace') { 
-        e.preventDefault();
-        deleteCurrentCard(); 
-      }
     });
 
-    window.onload = initApp;
+    // Nota: Al iniciar la app, se queda en la pantalla de login hasta ingresar la contraseña.
   </script>
 </body>
 </html>
