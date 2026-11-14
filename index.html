@@ -128,7 +128,7 @@
       </div>
 
       <div class="pt-4 border-t border-slate-700 text-center text-xs text-slate-500">
-        Sistema Híbrido de Vocabulario v3.7
+        Sistema Híbrido de Vocabulario v3.8
       </div>
     </div>
   </div>
@@ -362,8 +362,8 @@
   </div>
 
   <script>
-    // CAMBIA AQUÍ TU CONTRASEÑA SI LO DESEAS
-    const APP_PASSWORD = "mes12";
+    // CONTRASEÑA DE ACCESO
+    const APP_PASSWORD = "1234";
 
     let cards = JSON.parse(localStorage.getItem('flashcards')) || [];
     let currentIndex = 0;
@@ -378,7 +378,7 @@
     let defaultKeybinds = {
       newCard: 'n',
       editCard: 'e',
-      deleteCard: 'none', // Desactivado por defecto para evitar borrados accidentales
+      deleteCard: 'Delete', // Tecla Suprimir (Delete)
       flipCard: ' ',
       nextCard: 'ArrowRight',
       prevCard: 'ArrowLeft',
@@ -590,11 +590,19 @@
       updateView();
     }
 
+    // ELIMINACIÓN DE TARJETA CON CONFIRMACIÓN DE PALABRA CLAVE
     function deleteCurrentCard() {
       const activeCards = getActiveCards();
       if (activeCards.length === 0) return;
       const cardToDelete = activeCards[currentIndex];
       
+      // Pedir confirmación escribiendo "BORRAR"
+      const confirmWord = prompt(`Para eliminar la tarjeta "${cardToDelete.front}", escribe: BORRAR`);
+      if (confirmWord !== "BORRAR") {
+        alert("Operación cancelada. La tarjeta no ha sido eliminada.");
+        return;
+      }
+
       const realIndex = cards.findIndex(c => c === cardToDelete);
       if (realIndex > -1) {
         cards.splice(realIndex, 1);
@@ -716,7 +724,7 @@
     const actionLabels = {
       newCard: 'Nueva tarjeta',
       editCard: 'Editar tarjeta',
-      deleteCard: 'Borrar tarjeta actual (Desactivado)',
+      deleteCard: 'Borrar tarjeta actual (Requiere confirmar)',
       flipCard: 'Voltear tarjeta',
       nextCard: 'Tarjeta Siguiente',
       prevCard: 'Tarjeta Anterior',
@@ -935,9 +943,11 @@
         e.preventDefault();
         toggleHelpModal(); 
       }
+      else if (keyPressed === keybinds.deleteCard || e.key === 'Delete') { 
+        e.preventDefault();
+        deleteCurrentCard(); 
+      }
     });
-
-    // Nota: Al iniciar la app, se queda en la pantalla de login hasta ingresar la contraseña.
   </script>
 </body>
 </html>
