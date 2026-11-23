@@ -597,7 +597,7 @@
       const cardToDelete = activeCards[currentIndex];
       
       // Pedir confirmación escribiendo "BORRAR"
-      const confirmWord = prompt(`Para eliminar la tarjeta "${cardToDelete.front}", escribe: BORRAR`);
+      const confirmWord = prompt(`Para eliminar la tarjeta "${cardToDelete.front}", escribe: borrar`);
       if (confirmWord !== "borrar") {
         alert("Operación cancelada. La tarjeta no ha sido eliminada.");
         return;
@@ -616,8 +616,8 @@
       const confirmFirst = confirm("⚠️ ¡ADVERTENCIA! Estás a punto de borrar TODO tu diccionario de palabras de forma permanente. ¿Estás seguro?");
       if (!confirmFirst) return;
 
-      const confirmWord = prompt("Para confirmar el borrado total, escribe la palabra: BORRAR");
-      if (confirmWord !== "BORRAR") {
+      const confirmWord = prompt("Para confirmar el borrado total, escribe la palabra: borrar");
+      if (confirmWord !== "borrar") {
         alert("Operación cancelada. Tus tarjetas están a salvo.");
         return;
       }
